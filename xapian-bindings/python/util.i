@@ -64,10 +64,6 @@
 %rename(_values_end) Xapian::Document::values_end;
 %rename(_get_matching_terms_begin) Xapian::Enquire::get_matching_terms_begin;
 %rename(_get_matching_terms_end) Xapian::Enquire::get_matching_terms_end;
-%rename(_begin) Xapian::ESet::begin;
-%rename(_end) Xapian::ESet::end;
-%rename(_begin) Xapian::MSet::begin;
-%rename(_end) Xapian::MSet::end;
 %rename(_positionlist_begin) Xapian::PostingIterator::positionlist_begin;
 %rename(_positionlist_end) Xapian::PostingIterator::positionlist_end;
 %rename(_get_terms_begin) Xapian::Query::get_terms_begin;

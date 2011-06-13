@@ -29,198 +29,225 @@
 # how to format the documentation strings.
 __docformat__ = "restructuredtext en"
 
-##################################
-# Support for iteration of MSets #
-##################################
+def wrapper():
+    # The wrapper provides a closure in which we store references to various
+    # low-level functions which we don't want exposed to users.
 
-class MSetItem(object):
-    """An item returned from iteration of the MSet.
+    ##################################
+    # Support for iteration of MSets #
+    ##################################
 
-    The item supports access to the following attributes and properties:
+    get_hit_internal = MSet._get_hit_internal
+    del MSet._get_hit_internal
 
-     - `docid`: The Xapian document ID corresponding to this MSet item.
-     - `weight`: The weight corresponding to this MSet item.
-     - `rank`: The rank of this MSet item.  The rank is the position in the
-       total set of matching documents of this item.  The highest document is
-       given a rank of 0.  If the MSet did not start at the highest matching
-       document, because a non-zero 'start' parameter was supplied to
-       get_mset(), the first document in the MSet will have a rank greater than
-       0 (in fact, it will be equal to the value of 'start' supplied to
-       get_mset()).
-     - `percent`: The percentage score assigned to this MSet item.
-     - `document`: The document for this MSet item.  This can be used to access
-       the document data, or any other information stored in the document (such
-       as term lists).  It is lazily evaluated.
-     - `collapse_key`: The value of the key which was used for collapsing.
-     - `collapse_count`: An estimate of the number of documents that have been
-       collapsed into this one.
+    global MSetItem
+    class MSetItem(object):
+        """An item returned from iteration of the MSet.
 
-    The collapse count estimate will always be less than or equal to the actual
-    number of other documents satisfying the match criteria with the same
-    collapse key as this document.  If may be 0 even though there are other
-    documents with the same collapse key which satisfying the match criteria.
-    However if this method returns non-zero, there definitely are other such
-    documents.  So this method may be used to inform the user that there are
-    "at least N other matches in this group", or to control whether to offer a
-    "show other documents in this group" feature (but note that it may not
-    offer it in every case where it would show other documents).
+        The item supports access to the following attributes and properties:
 
-    """
+         - `docid`: The Xapian document ID corresponding to this MSet item.
+         - `weight`: The weight corresponding to this MSet item.
+         - `rank`: The rank of this MSet item.  The rank is the position in the
+           total set of matching documents of this item.  The highest document is
+           given a rank of 0.  If the MSet did not start at the highest matching
+           document, because a non-zero 'start' parameter was supplied to
+           get_mset(), the first document in the MSet will have a rank greater than
+           0 (in fact, it will be equal to the value of 'start' supplied to
+           get_mset()).
+         - `percent`: The percentage score assigned to this MSet item.
+         - `document`: The document for this MSet item.  This can be used to access
+           the document data, or any other information stored in the document (such
+           as term lists).  It is lazily evaluated.
+         - `collapse_key`: The value of the key which was used for collapsing.
+         - `collapse_count`: An estimate of the number of documents that have been
+           collapsed into this one.
 
-    __slots__ = ('_mset', '_firstitem', 'docid', 'weight', 'rank',
-                 'percent', 'collapse_key', 'collapse_count', '_document', )
+        The collapse count estimate will always be less than or equal to the actual
+        number of other documents satisfying the match criteria with the same
+        collapse key as this document.  If may be 0 even though there are other
+        documents with the same collapse key which satisfying the match criteria.
+        However if this method returns non-zero, there definitely are other such
+        documents.  So this method may be used to inform the user that there are
+        "at least N other matches in this group", or to control whether to offer a
+        "show other documents in this group" feature (but note that it may not
+        offer it in every case where it would show other documents).
 
-    def __init__(self, iter, mset):
-        self._mset = mset
-        self._firstitem = self._mset.get_firstitem()
-        self.docid = iter.get_docid()
-        self.weight = iter.get_weight()
-        self.rank = iter.get_rank()
-        self.percent = iter.get_percent()
-        self.collapse_key = iter.get_collapse_key()
-        self.collapse_count = iter.get_collapse_count()
-        self._document = None
+        """
 
-    def _get_document(self):
-        if self._document is None:
-            self._document = self._mset._get_hit_internal(self.rank - self._firstitem).get_document()
-        return self._document
+        __slots__ = ('_mset', '_firstitem', 'docid', 'weight', 'rank',
+                     'percent', 'collapse_key', 'collapse_count', '_document', )
 
-    document = property(_get_document, doc="The document object corresponding to this MSet item.")
+        def __init__(self, iter, mset):
+            self._mset = mset
+            self._firstitem = self._mset.get_firstitem()
+            self.docid = iter.get_docid()
+            self.weight = iter.get_weight()
+            self.rank = iter.get_rank()
+            self.percent = iter.get_percent()
+            self.collapse_key = iter.get_collapse_key()
+            self.collapse_count = iter.get_collapse_count()
+            self._document = None
 
-class MSetIter(object):
-    """An iterator over the items in an MSet.
+        def document(self):
+            if self._document is None:
+                self._document = get_hit_internal(self._mset, self.rank - self._firstitem).get_document()
+            return self._document
+        document = property(document, doc="The document object corresponding to this MSet item.")
 
-    The iterator will return MSetItem objects, which will be evaluated lazily
-    where appropriate.
+    mset_begin = MSet.begin
+    del MSet.begin
+    mset_end = MSet.end
+    del MSet.end
+    global MSetIter
+    class MSetIter(object):
+        """An iterator over the items in an MSet.
 
-    """
-    __slots__ = ('_iter', '_end', '_mset')
-    def __init__(self, mset):
-        self._iter = mset._begin()
-        self._end = mset._end()
-        self._mset = mset
+        The iterator will return MSetItem objects, which will be evaluated lazily
+        where appropriate.
+
+        """
+        __slots__ = ('_iter', '_end', '_mset')
+        def __init__(self, mset):
+            self._iter = mset_begin(mset)
+            self._end = mset_end(mset)
+            self._mset = mset
+
+        def __iter__(self):
+            return self
+
+        # For Python2:
+        def next(self):
+            if self._iter == self._end:
+                raise StopIteration
+            else:
+                r = MSetItem(self._iter, self._mset)
+                self._iter.next()
+                return r
+
+        # For Python3:
+        def __next__(self):
+            if self._iter == self._end:
+                raise StopIteration
+            else:
+                r = MSetItem(self._iter, self._mset)
+                next(self._iter)
+                return r
+
+    # Modify the MSet to allow access to the python iterators, and have other
+    # convenience methods.
+    def __iter__(self):
+        """Return an iterator over the MSet.
+
+        The iterator will return MSetItem objects, which will be evaluated lazily
+        where appropriate.
+
+        """
+        return MSetIter(self)
+    MSet.__iter__ = __iter__
+
+    def __len__(self):
+        """Return the number of items in this MSet.
+
+        """
+        return MSet.size(self)
+    MSet.__len__ = __len__
+
+    def get_hit(self, index):
+        """Get an item from the MSet.
+
+        The supplied index is relative to the start of the MSet, not the absolute
+        rank of the item.
+
+        Returns an MSetItem.
+
+        """
+        if index < 0:
+            index += len(self)
+        if index < 0 or index >= len(self):
+            raise IndexError("Mset index out of range")
+        return MSetItem(get_hit_internal(self, index), self)
+    MSet.__getitem__ = get_hit
+    MSet.get_hit = get_hit
+
+    ##################################
+    # Support for iteration of ESets #
+    ##################################
+
+    global ESetItem
+    class ESetItem(object):
+        """An item returned from iteration of the ESet.
+
+        The item supports access to the following attributes:
+
+         - `term`: The term corresponding to this ESet item.
+         - `weight`: The weight corresponding to this ESet item.
+
+        """
+        __slots__ = ('term', 'weight')
+
+        def __init__(self, iter):
+            self.term = iter.get_term()
+            self.weight = iter.get_weight()
+
+    eset_begin = ESet.begin
+    del ESet.begin
+    eset_end = ESet.end
+    del ESet.end
+    global ESetIter
+    class ESetIter(object):
+        """An iterator over the items in an ESet.
+
+        The iterator will return ESetItem objects.
+
+        """
+        __slots__ = ('_iter', '_end')
+        def __init__(self, eset):
+            self._iter = eset_begin(eset)
+            self._end = eset_end(eset)
+
+        def __iter__(self):
+            return self
+
+        # For Python2:
+        def next(self):
+            if self._iter == self._end:
+                raise StopIteration
+            else:
+                r = ESetItem(self._iter)
+                self._iter.next()
+                return r
+
+        # For Python3:
+        def __next__(self):
+            if self._iter == self._end:
+                raise StopIteration
+            else:
+                r = ESetItem(self._iter)
+                next(self._iter)
+                return r
+
+    # Modify the ESet to allow access to the python iterators, and have other
+    # convenience methods.
 
     def __iter__(self):
-        return self
-
-    # For Python2:
-    def next(self):
-        if self._iter == self._end:
-            raise StopIteration
-        else:
-            r = MSetItem(self._iter, self._mset)
-            self._iter.next()
-            return r
-
-    # For Python3:
-    def __next__(self):
-        if self._iter == self._end:
-            raise StopIteration
-        else:
-            r = MSetItem(self._iter, self._mset)
-            next(self._iter)
-            return r
-
-
-# Modify the MSet to allow access to the python iterators, and have other
-# convenience methods.
-
-def _mset_gen_iter(self):
-    """Return an iterator over the MSet.
-
-    The iterator will return MSetItem objects, which will be evaluated lazily
-    where appropriate.
-
-    """
-    return MSetIter(self)
-MSet.__iter__ = _mset_gen_iter
-
-MSet.__len__ = lambda self: MSet.size(self)
-
-def _mset_getitem(self, index):
-    """Get an item from the MSet.
-
-    The supplied index is relative to the start of the MSet, not the absolute
-    rank of the item.
-
-    Returns an MSetItem.
-
-    """
-    if index < 0:
-        index += len(self)
-    if index < 0 or index >= len(self):
-        raise IndexError("Mset index out of range")
-    return MSetItem(self._get_hit_internal(index), self)
-MSet.__getitem__ = _mset_getitem
-MSet.get_hit = _mset_getitem
-
-
-##################################
-# Support for iteration of ESets #
-##################################
-
-class ESetItem(object):
-    """An item returned from iteration of the ESet.
-
-    The item supports access to the following attributes:
-
-     - `term`: The term corresponding to this ESet item.
-     - `weight`: The weight corresponding to this ESet item.
-
-    """
-    __slots__ = ('term', 'weight')
-
-    def __init__(self, iter):
-        self.term = iter.get_term()
-        self.weight = iter.get_weight()
-
-class ESetIter(object):
-    """An iterator over the items in an ESet.
-
-    The iterator will return ESetItem objects.
-
-    """
-    __slots__ = ('_iter', '_end')
-    def __init__(self, eset):
-        self._iter = eset._begin()
-        self._end = eset._end()
-
-    def __iter__(self):
-        return self
-
-    # For Python2:
-    def next(self):
-        if self._iter == self._end:
-            raise StopIteration
-        else:
-            r = ESetItem(self._iter)
-            self._iter.next()
-            return r
-
-    # For Python3:
-    def __next__(self):
-        if self._iter == self._end:
-            raise StopIteration
-        else:
-            r = ESetItem(self._iter)
-            next(self._iter)
-            return r
-
-# Modify the ESet to allow access to the python iterators, and have other
-# convenience methods.
-
-def _eset_gen_iter(self):
-    """Return an iterator over the ESet.
+        """Return an iterator over the ESet.
     
-    The iterator will return ESetItem objects.
+        The iterator will return ESetItem objects.
 
-    """
-    return ESetIter(self)
-ESet.__iter__ = _eset_gen_iter
+        """
+        return ESetIter(self)
+    ESet.__iter__ = __iter__
 
-ESet.__len__ = lambda self: ESet.size(self)
+    def __len__(self):
+        """Return the number of items in this ESet.
 
+        """
+        return ESet.size(self)
+    ESet.__len__ = __len__
+
+wrapper()
+del wrapper
 
 #######################################
 # Support for iteration of term lists #
