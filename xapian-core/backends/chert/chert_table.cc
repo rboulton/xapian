@@ -32,6 +32,7 @@
 #ifdef __WIN32__
 # include "msvc_posix_wrapper.h"
 #endif
+#include <fcntl.h>
 
 #include "omassert.h"
 #include "stringutils.h" // For STRINGIZE().
@@ -267,6 +268,14 @@ ChertTable::write_block(uint4 n, const byte * p) const
 #ifdef HAVE_PWRITE
     off_t offset = off_t(block_size) * n;
     int m = block_size;
+#define ALLOCSIZE (128 * 1024 * 1024)
+    off_t alloc_offset = (offset / ALLOCSIZE) * ALLOCSIZE;
+    if (alloc_offset == offset) {
+	int allocerrno = posix_fallocate(handle, alloc_offset, ALLOCSIZE);
+	if (allocerrno) {
+	    throw Xapian::DatabaseError("posix_fallocate(" + str(alloc_offset) + ", " + str(ALLOCSIZE) + ") failed: " + str(allocerrno));
+	}
+    }
     while (true) {
 	ssize_t bytes_written = pwrite(handle, p, m, offset);
 	if (bytes_written == m) {
