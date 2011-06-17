@@ -20,6 +20,11 @@ MapDictionary::MapDictionary(void)
 {
 }
 
+MapDictionary::MapDictionary(string *ascWords)
+{
+	
+}
+
 MapDictionary::~MapDictionary(void)
 {
 }
@@ -30,6 +35,20 @@ int MapDictionary::size(){
 }
 
 void MapDictionary::load(){
+	clock_t start, finish;
+	start = clock();
+	freopen("t-base.dic","rb",stdin);
+	string str;
+	
+	string a;
+	while(cin>>a){	
+		acsWords.push_back(a);
+	}
+
+	finish = clock();
+	int i = finish - start;
+	cout<<i<<endl;
+	
 	ifstream infile("t-base.dic");
 	if(!infile){
 		cerr<< "unable to open file";
@@ -37,7 +56,7 @@ void MapDictionary::load(){
 	}
 	
 	char*p = new char[50];
-	int i = 0;
+	//int i = 0;
 	size_t ilength1 = 0, ilength2 = 0;
 	size_t ilength = 0;
 	size_t wordLength = 0;
@@ -85,9 +104,11 @@ void MapDictionary::load(){
 		}
 		str1 = str2;
 	}
+	
 }
 
-void MapDictionary::search(string input){
+bool MapDictionary::search(string input)
+{	
 	Utf8Iterator in_utf(input);
 	unsigned first, temp;
 	string strTemp = "";
@@ -304,6 +325,7 @@ void MapDictionary::search(string input){
 		}		
 
 	}
-	
+	return true;
+
 	
 }

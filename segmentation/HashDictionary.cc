@@ -1,6 +1,7 @@
 
 #include "stdafx.h"
 #include "HashDictionary.h"
+#include "BinaryDictionary.h"
 #include "iostream"
 #include "fstream"
 #include "string"
@@ -16,68 +17,107 @@ using namespace Xapian;
 
 HashDictionary::HashDictionary(void)
 {
-	dictionaryPath = "e://dic//t-base.dic";
+	//dictionaryPath = "e://dic//t-base.dic";
+}
+
+HashDictionary::HashDictionary(string strPath)
+{
+
+}
+
+HashDictionary::HashDictionary(string *ascWords, int start, int end, int totalCount,int mapIndex)
+{
+	this->ascWords = ascWords;
+	this->start = start;
+	this->end = end;
+	this->count = end - start;
+	this->totalCount = totalCount;
+	this->mapIndex = mapIndex;
 }
 
 HashDictionary::~HashDictionary(void)
 {
 }
 
-int HashDictionary::size(){
+int HashDictionary::size()
+{
 	return 0;
 }
 
-void HashDictionary::load(){	
 
-	ifstream infile("t-base.dic");
-	if(!infile){
-		cerr<< "unable to open file";
-		return ;
+void HashDictionary::createSubDictionary()
+{
+	if(start >= totalCount){
+		return;
 	}
-	
-	string str;
-	char*p = new char[50];
-	int i = 0;
-	size_t ilength = 0;
-	unsigned first;
-	unsigned temp;
-	/*
-	
-	while(infile>>str)
-	{		
-		Utf8Iterator it(str);
-		ilength = it.left();
-		first = *it;
-		Word word = mapWords[first];
-		word.setValue(first);
-		if(ilength == 2){
-			word.p2.words.push_back(str);
-			word.p2.length++;
-		}if(ilength == 3){
-			word.p3.words.push_back(str);
-			word.p3.length++;
-		}if(ilength == 4){
-			word.p4.words.push_back(str);
-			word.p4.length++;
-		}if(ilength >= 5){
-			word.p5.words.push_back(str);
-			word.p5.length++;
+
+	//identify the words starting with same character
+	int beginIndex = start;
+	int endIndex = start + 1;	
+	unsigned beginMapChar = getIndexChar(ascWords[start], mapIndex);
+	unsigned endMapChar;
+	for(; endIndex < end; endIndex++)
+	{
+		endMapChar = getIndexChar(ascWords[endIndex],mapIndex);
+		if(endMapChar != beginMapChar)
+		{
+			addSubDictionary(beginMapChar, beginIndex, endIndex);
+			beginIndex = endIndex;
+			beginMapChar = endMapChar;
 		}
-		word.length++;
 	}
-	*/
+	addSubDictionary(beginMapChar, beginIndex, end);	
+}
+
+
+void HashDictionary::addSubDictionary(unsigned hashChar, int beginIndex, int endIndex)
+{
+	dictionary *subDic = createSubDictionary(ascWords,beginIndex, endIndex);
+	subDictionarys.insert(pair<unsigned, dictionary*>(hashChar, subDic));
+}
+
+dictionary* HashDictionary::createSubDictionary(string *ascWords, int beginIndex, int endIndex)
+{
+	if((endIndex - beginIndex) < 16)
+	{
+		dictionary *dic = new BinaryDictionary(ascWords, beginIndex, endIndex);
+		return dic;
+	}
+	else 
+	{
+		dictionary *dic = new HashDictionary(ascWords, beginIndex, endIndex, totalCount, mapIndex + 1);
+		return dic;
+	}	
+}
+
+
+
+unsigned HashDictionary::getIndexChar(string str, int index)
+{	
+	Utf8Iterator it(str);
+	for(int i = 0; i < index && it != Utf8Iterator(); i++)
+	{
+		++it;
+	}
+	if(it == Utf8Iterator())
+	{
+		return -1;
+	}
+	return *it;
+
 }
 
 
 
 
-/*
-Word HashDictionary::get(int index){
-	Word word = new Word();
-	return new Word();
-}
-*/
-
-void HashDictionary::search(string input){
+void HashDictionary::load()
+{	
 	
+	
+	
+}
+
+bool HashDictionary::search(string input)
+{
+	return true;
 }

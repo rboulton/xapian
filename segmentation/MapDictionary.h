@@ -9,13 +9,15 @@ class MapDictionary :
 {
 public:
 	MapDictionary(void);
+	MapDictionary(string *ascWords);
 
 public:
 	~MapDictionary(void);
 	map<unsigned, Node> mapNodes;
+	vector<string> acsWords;
 	int size();
 	void load();
 	//virtual Word get(int index) const=0;
-	void search(string input); 
+	bool search(string input); 
 	vector<string> output;
 };

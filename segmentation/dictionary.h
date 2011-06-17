@@ -10,8 +10,8 @@ public:
 public:
 	~dictionary(void);
 public:
-	virtual int size() const = 0;
-	virtual void load() const = 0;
+	 int size() const ;
+	 void load() const;
 	//virtual Word get(int index) const=0;
-	virtual void search(string input) const=0; 
+	 bool search(string input); 
 };
