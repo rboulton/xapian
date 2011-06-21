@@ -3,24 +3,25 @@
 
 
 
-class FirstLevelDictionary :
-	public dictionary
+class FirstLevelDictionary //:
+	//public dictionary
 {
 public:
-	FirstLevelDictionary(void);
+	FirstLevelDictionary();
 	FirstLevelDictionary(string* ascWords, int beginIndex, int endIndex, int totalCount);
 public:
-	~FirstLevelDictionary(void);
+	~FirstLevelDictionary();
 	dictionary *twoWordDic;
 	dictionary *threeWordDic;
 	dictionary *fourWordDic;
-	dictionary *MultWordDic;
+	dictionary *multWordDic;
 	int maxlength;
+	int totalCount;
 	
-	int size() const ;
-	void load() const;
-	//virtual Word get(int index) const=0;
-	bool search(string input); 
+	int size()  ;
+	int search(string input,int offset);
+	unsigned getMapChar(string input,int offset);
 	dictionary* createSubDictionary(string* ascWords, int count, int index);
-	int max(int a,int b);
+	int maxValue(int i, int j, int m, int n);
+	
 };

@@ -6,19 +6,20 @@ class BinaryDictionary :
 {
 public:
 	BinaryDictionary(string *ascWords, int count);
-	BinaryDictionary(string *ascWords, int beginIndex, int endIndex);
+	BinaryDictionary(string *ascWords, int beginIndex, int endIndex, int totalCount);
 //private:
 	
 public:
-	~BinaryDictionary(void);
+	~BinaryDictionary();
 	string *ascWords;
 	int beginIndex;
 	int endIndex;
 	int count;
-
+	
 	int size();
-	void load();
 	string getWord(int index);
-	bool search(string input);
+
+	virtual int search(string input,int offset,int count, unsigned mapChar);
+	bool search(string str);
 	int compare(string str1,string str2);
 };

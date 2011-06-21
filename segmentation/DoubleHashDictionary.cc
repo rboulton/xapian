@@ -2,6 +2,7 @@
 #include "DoubleHashDictionary.h"
 #include "stdafx.h"
 //#include "HashDictionary.h"
+#include "FirstLevelDictionary.h"
 #include "BinaryDictionary.h"
 #include "iostream"
 #include "fstream"
@@ -31,7 +32,7 @@ DoubleHashDictionary::DoubleHashDictionary(string* ascWords, int totalCount)
 	createSubDictionaries();
 }
 
-DoubleHashDictionary::~DoubleHashDictionary(void)
+DoubleHashDictionary::~DoubleHashDictionary()
 {
 }
 
@@ -54,20 +55,20 @@ void DoubleHashDictionary::createSubDictionaries()
 	//identify the words starting with same character
 	int begin = beginIndex;
 	int end = begin + 1;
-	unsigned beginMapChar = getIndexChar(ascWords[begin]);
-	unsigned endMapChar;
-	string strBeginChar="";
+	unsigned beginMapChar = getIndexChar(ascWords[begin]); //get the first chinese character from beginning word, 
+	//unsigned endMapChar;
+	string strBeginChar;
 	append_utf8(strBeginChar, beginMapChar);
 	for(; end < endIndex; end++)
 	{
-				
-		if(!isSameIndex(strBeginChar, ascWords[end]))
+
+		if(!isSameIndex(strBeginChar, ascWords[end])) // if the first character is not same , then the words before that is in a sub dictionary
 		{
 			addSubDictionary(beginMapChar, begin, end);
 			begin = end;
 			beginMapChar = getIndexChar(ascWords[end]);
-			strBeginChar = "";
-			append_utf8(strBegin, beginMapChar);
+			strBeginChar.clear();
+			append_utf8(strBeginChar, beginMapChar);
 		}
 	}
 	addSubDictionary(beginMapChar, begin, endIndex);	
@@ -76,13 +77,16 @@ void DoubleHashDictionary::createSubDictionaries()
 
 void DoubleHashDictionary::addSubDictionary(unsigned hashChar, int beginIndex, int endIndex)
 {
-	dictionary *subDic = createSubDictionary(ascWords,beginIndex, endIndex);
-	subDictionarys.insert(pair<unsigned, dictionary*>(hashChar, subDic));
+	FirstLevelDictionary *subDic = createSubDictionary(ascWords,beginIndex, endIndex);
+	subDictionaries.insert(pair<unsigned, FirstLevelDictionary*>(hashChar, subDic));
 
 }
 
-dictionary* DoubleHashDictionary::createSubDictionary(string *ascWords, int startIndex, int endIndex)
+FirstLevelDictionary* DoubleHashDictionary::createSubDictionary(string *ascWords, int startIndex, int endIndex)
 {
+	FirstLevelDictionary *subDic = new FirstLevelDictionary(ascWords, startIndex, endIndex, totalCount);
+	return subDic;
+	/*
 	if((endIndex - beginIndex) < 16)
 	{
 		dictionary *subDic = new BinaryDictionary(ascWords, startIndex, endIndex, totalCount);
@@ -91,19 +95,71 @@ dictionary* DoubleHashDictionary::createSubDictionary(string *ascWords, int star
 	{
 		dictionary *subDic = new FirstLevelDictionary(ascWords, startIndex, endIndex, totalCount);
 		return subDic;
-	}
+	}*/
 }
 
 unsigned DoubleHashDictionary::getIndexChar(string str)
 {	
 	Utf8Iterator it(str);
-	++it;
 	return *it;
 
 }
 
 
-bool DoubleHashDictionary::isSameIndex(string strBeginIndex, string strEnd)
+unsigned DoubleHashDictionary::getIndexChar(string str, int offset)
 {
-	return	strBeginIndex.compare(ascWords);
+	string strTemp = str.substr(offset, 3);
+	Utf8Iterator it(strTemp);
+	return *it;
+	
+}
+
+
+bool DoubleHashDictionary::isSameIndex(string strIndex, string str)
+{
+	if(str.compare(0,3,strIndex) == 0)
+		return true;
+	else 
+		return false;
+	
+}
+
+int DoubleHashDictionary::size()
+{
+	return count;
+}
+
+
+
+void DoubleHashDictionary::search(string input, vector<string> &output)
+{
+	int offset = 0, index = 0;
+	unsigned inputLength = input.size();
+	FirstLevelDictionary *dic;
+	
+	while(offset < inputLength)
+	{
+		unsigned mapCode = getIndexChar(input, offset);
+		map<unsigned, FirstLevelDictionary*>::iterator it = subDictionaries.find(mapCode);
+		
+		if(it != subDictionaries.end())
+		{
+			dic = it->second;
+			index = dic->search(input, offset);
+			if(index > 0)
+			{
+				output.push_back( input.substr(offset, index-offset));
+				offset += index;
+			}else
+			{
+				output.push_back(input.substr(offset, 3));
+				offset + 3;
+			}
+		}else
+		{
+			offset + 3;
+		}
+		
+	}
+
 }

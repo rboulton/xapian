@@ -1,17 +1,17 @@
 #pragma once
 #include "Node.h"
-#include "string"
+#include <string>
+#include <vector>
 using namespace std;
 
 class dictionary
 {
 public:
-	dictionary(void);
+	dictionary();
 public:
-	~dictionary(void);
+	~dictionary();
 public:
 	 int size() const ;
-	 void load() const;
-	//virtual Word get(int index) const=0;
-	 bool search(string input); 
+	 virtual int search(string input,int offset,int count, unsigned mapChar);
+	// void search(string input, vector<string> &output);
 };

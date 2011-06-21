@@ -1,21 +1,23 @@
+#define NOMINMAX
 #include "StdAfx.h"
+#include <algorithm>
 #include "BinaryDictionary.h"
+
 
 BinaryDictionary::BinaryDictionary(string *ascWords, int count)
 {
-//	this(ascWords, 0, count);
 	this->ascWords = ascWords;
 	this->beginIndex = 0;
 	this->endIndex = count;
 	this->count = count;
 }
 
-BinaryDictionary::~BinaryDictionary(void)
+BinaryDictionary::~BinaryDictionary()
 {
 }
 
 
-BinaryDictionary::BinaryDictionary(std::string *ascWords, int beginIndex, int endIndex)
+BinaryDictionary::BinaryDictionary(std::string *ascWords, int beginIndex, int endIndex, int totalCount)
 {
 	this->ascWords = ascWords;
 	this->beginIndex = beginIndex;
@@ -33,15 +35,50 @@ string BinaryDictionary::getWord(int index)
 
 int BinaryDictionary::size()
 {
-	return 0;
+	return count;
 }
 
-void BinaryDictionary::load()
+
+
+int BinaryDictionary::search(string input,int offset,int count, unsigned mapChar){ 
+	if(count <= 4)
+	{
+		string temp = input.substr(offset, count * 3);
+		if(true == search(temp))
+		{
+			return count * 3;
+		}
+		else
+		{
+			return -1;
+		}
+	}else
+	{
+		int index = beginIndex;
+		string temp;
+		int maxlength = -1;
+		int size;
+		for(;index<endIndex;index++)
+		{
+			temp = ascWords[index];
+			if(input.compare(offset, temp.size(), temp) == 0)
+			{
+				size = temp.size();
+
+				maxlength = max(maxlength, size);			
+			}
+		}
+
+		return maxlength;
+		
+	}
+	
+}
+
+
+
+bool BinaryDictionary::search(string str)
 {
-}
-
-bool BinaryDictionary::search(string input)
-{ 
 	int begin = beginIndex;
 	int end = endIndex;
 	int result;
@@ -49,7 +86,7 @@ bool BinaryDictionary::search(string input)
 	while(begin < end)
 	{
 		middle = (begin + end) / 2;
-		result = compare(input, ascWords[middle]);
+		result = compare(str, ascWords[middle]);
 		if(result == 0)
 		{
 			return true;

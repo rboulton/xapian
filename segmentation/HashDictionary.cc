@@ -10,12 +10,12 @@
 #include <time.h>
 #include "unordered_map.h"
 #include "unicode.h"
-#include "Node.h"
+#include "init.h"
 #include "map"
 using namespace std;
 using namespace Xapian;
 
-HashDictionary::HashDictionary(void)
+HashDictionary::HashDictionary()
 {
 	//dictionaryPath = "e://dic//t-base.dic";
 }
@@ -35,7 +35,7 @@ HashDictionary::HashDictionary(string *ascWords, int start, int end, int totalCo
 	this->mapIndex = mapIndex;
 }
 
-HashDictionary::~HashDictionary(void)
+HashDictionary::~HashDictionary()
 {
 }
 
@@ -80,7 +80,7 @@ dictionary* HashDictionary::createSubDictionary(string *ascWords, int beginIndex
 {
 	if((endIndex - beginIndex) < 16)
 	{
-		dictionary *dic = new BinaryDictionary(ascWords, beginIndex, endIndex);
+		dictionary *dic = new BinaryDictionary(ascWords, beginIndex, endIndex,count);
 		return dic;
 	}
 	else 
@@ -109,15 +109,7 @@ unsigned HashDictionary::getIndexChar(string str, int index)
 
 
 
-
-void HashDictionary::load()
-{	
-	
-	
-	
-}
-
-bool HashDictionary::search(string input)
+int HashDictionary::search(std::string input, int offset)
 {
 	return true;
 }

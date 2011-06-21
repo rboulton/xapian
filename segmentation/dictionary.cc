@@ -1,10 +1,16 @@
 #include "StdAfx.h"
 #include "dictionary.h"
 
-dictionary::dictionary(void)
+dictionary::dictionary()
 {
 }
 
-dictionary::~dictionary(void)
+dictionary::~dictionary()
 {
+}
+
+
+int dictionary::search(string input,int offset,int count, unsigned mapChar)
+{
+	return 1;
 }

@@ -2,15 +2,17 @@
 #include "dictionary.h"
 #include <string>
 #include <map>
+#include <vector>
+#include "FirstLevelDictionary.h"
 
-class DoubleHashDictionary :
-	public dictionary
+class DoubleHashDictionary// :
+	//public dictionary
 {
 public:
 	DoubleHashDictionary(string* ascWords, int totalCount);
 	DoubleHashDictionary(string* ascWords, int beginIndex, int endIndex, int totalCount);
 public:
-	~DoubleHashDictionary(void);
+	~DoubleHashDictionary();
 
 public:
 	int getSize();
@@ -19,16 +21,17 @@ public:
 	int endIndex;
 	int count;
 	int totalCount;
-	map<unsigned, dictionary*> subDictionarys;
+	map<unsigned, FirstLevelDictionary*> subDictionaries;
 
 	int size();
-	void load();
 	string getWord(int index);
 	void createSubDictionaries();
-	bool search(string input);
-	//int compare(string str1,string str2);
 	unsigned getIndexChar(string str);
-	bool isSameIndex(unsigned start, string str);
+	unsigned getIndexChar(string str, int offset);
+//	bool search(string input);
+	//vector<string> search(string input,vector<string> &output);
+	bool isSameIndex(string strBeginIndex, string str);
 	void addSubDictionary(unsigned hashChar, int beginIndex, int endIndex);
-	dictionary *createSubDictionary(string *ascWords, int startIndex, int endIndex);
+	FirstLevelDictionary *createSubDictionary(string *ascWords, int startIndex, int endIndex);
+	void search(string input, vector<string> &output);
 };
