@@ -10,13 +10,13 @@ public:
 //private:
 	
 public:
-	~BinaryDictionary();
+	virtual ~BinaryDictionary();
 	string *ascWords;
 	int beginIndex;
 	int endIndex;
 	int count;
 	
-	int size();
+	virtual int size();
 	string getWord(int index);
 
 	virtual int search(string input,int offset,int count, unsigned mapChar);

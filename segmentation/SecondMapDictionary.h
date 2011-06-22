@@ -11,7 +11,7 @@ public:
 	SecondMapDictionary();
 	SecondMapDictionary(string * ascWords, int beginIndex, int endIndex, int totalCount,int length);
 public:
-	~SecondMapDictionary();
+	virtual ~SecondMapDictionary();
 
 	map<unsigned, vector<string>> subs;
 	map<unsigned, string> twoWordSubs;
@@ -22,7 +22,7 @@ public:
 	int totalCount;
 	int wordLength;
 
-	int getSize();
+	virtual int size();
 	virtual int search(string input,int offset,int count, unsigned mapChar);
 	void createDictionary();
 	bool isSameIndex(string str, unsigned index);

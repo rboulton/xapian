@@ -91,7 +91,7 @@ unsigned SecondMapDictionary::getCharIndex(string str) // pick the second chines
 	return *it;		
 }
 
-int SecondMapDictionary::getSize()
+int SecondMapDictionary::size()
 {
 	return count;
 }
@@ -114,7 +114,7 @@ int SecondMapDictionary::search(string input,int offset,int count, unsigned mapC
 	}
 	else 
 	{
-		map<unsigned, vector<string>>::iterator it = subs.find(index);
+		map<unsigned, vector<string> >::iterator it = subs.find(index);
 		if(it == subs.end())
 		{
 			return -1;

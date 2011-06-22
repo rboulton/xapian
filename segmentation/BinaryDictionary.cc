@@ -93,10 +93,10 @@ bool BinaryDictionary::search(string str)
 		}
 		else if(result > 0)
 		{
-			begin =middle;
+			begin =middle + 1;
 		}else
 		{
-			end = middle;
+			end = middle - 1;
 		}
 		
 	}

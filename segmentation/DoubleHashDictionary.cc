@@ -12,7 +12,6 @@
 #include <time.h>
 #include "unordered_map.h"
 #include "unicode.h"
-#include "Node.h"
 #include "map"
 
 using namespace std;
@@ -153,11 +152,12 @@ void DoubleHashDictionary::search(string input, vector<string> &output)
 			}else
 			{
 				output.push_back(input.substr(offset, 3));
-				offset + 3;
+				offset += 3;
 			}
 		}else
 		{
-			offset + 3;
+			output.push_back(input.substr(offset,3));
+			offset += 3;
 		}
 		
 	}
