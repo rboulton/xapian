@@ -31,7 +31,8 @@ void SecondMapDictionary::createDictionary()
 	int index = beginIndex;
 	unsigned indexChar;
 	string str;
-	if (wordLength == 2)
+	if (wordLength == 2)  //if word length is 2, then each second charater is different, so using the unicode value of the second Chinese character as keyword
+						//each keyword indicate unique string
 	{
 		while(index < endIndex)
 		{
@@ -40,8 +41,12 @@ void SecondMapDictionary::createDictionary()
 			twoWordSubs.insert(pair<unsigned,string>(indexChar, str));
 			index++;
 		}
-	}else
-	{	
+	}
+	else
+	{	//if word length is more than 2, then there may exist words which have same second Chinese character
+		//so, still choosing the unicode value of the second Chinese character as keyword
+		//but,each unicode indicate a vector<string>
+
 		vector<string> words;
 		string strTemp;
 		string strIndex = ascWords[index].substr(3,3); 
@@ -52,10 +57,11 @@ void SecondMapDictionary::createDictionary()
 			strTemp = ascWords[index];
 			if(isSameIndex(strTemp,indexChar) == true)
 			{
-				words.push_back(strTemp);
-			}else
+				words.push_back(strTemp); //if the keyword is same ,just add this word to vector
+			}
+			else //if the keyword is not same, insert pair<unsigned, vector<string> >,clear the vector and compute next keyword
 			{
-				subs.insert(pair<unsigned,vector<string>>(indexChar,words));
+				subs.insert(pair<unsigned,vector<string> >(indexChar,words));
 				words.clear();
 				words.push_back(strTemp);
 				string strIndex = ascWords[index].substr(3,3); 
@@ -63,7 +69,7 @@ void SecondMapDictionary::createDictionary()
 			}
 			index++;
 		}
-		subs.insert(pair<unsigned,vector<string>>(indexChar,words));
+		subs.insert(pair<unsigned,vector<string> >(indexChar,words));
 		
 	}
 
@@ -100,7 +106,7 @@ int SecondMapDictionary::size()
 int SecondMapDictionary::search(string input,int offset,int count, unsigned mapChar)
 {
 	string strTemp = input.substr(offset, count*3);			
-	unsigned index = getCharIndex(strTemp);
+	unsigned index = mapChar;
 	if(count == 2)
 	{
 		map<unsigned, string>::iterator it = twoWordSubs.find(index);
@@ -114,6 +120,7 @@ int SecondMapDictionary::search(string input,int offset,int count, unsigned mapC
 	}
 	else 
 	{
+		//if check words whose length is more than 2,
 		map<unsigned, vector<string> >::iterator it = subs.find(index);
 		if(it == subs.end())
 		{
@@ -128,7 +135,7 @@ int SecondMapDictionary::search(string input,int offset,int count, unsigned mapC
 					return -1;
 				else
 					return count * 3;
-			}else //if  it more than five
+			}else //if  it more than five,check every words to find out whether it is in the input string
 			{
 				string word;
 				int maxlength = -1;
