@@ -1,15 +1,14 @@
 #define NOMINMAX
 
 #include "stdafx.h"
-
-#include "FirstLevelDictionary.h"
-#include "DBinaryDictionary.h"
-#include "SecondMapDictionary.h"
 #include "unicode.h"
 #include <algorithm>
 #include <iostream>
 #include <string>
 #include "dictionary.h"
+#include "FirstLevelDictionary.h"
+#include "DBinaryDictionary.h"
+#include "SecondMapDictionary.h"
 using namespace std;
 using namespace Xapian;
 

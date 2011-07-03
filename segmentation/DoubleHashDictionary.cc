@@ -1,16 +1,14 @@
 #include "stdafx.h"
+#include <iostream>
+#include <fstream>
+#include <string>
+#include <vector>
+#include <algorithm>
+#include <map>
 #include "DoubleHashDictionary.h"
-
 #include "FirstLevelDictionary.h"
 #include "BinaryDictionary.h"
-#include "iostream"
-#include "fstream"
-#include "string"
-#include "vector"
-#include <algorithm>
-#include <time.h>
 #include "unicode.h"
-#include "map"
 
 using namespace std;
 using namespace Xapian;
@@ -58,7 +56,7 @@ void DoubleHashDictionary::createSubDictionaries()
 
 	 // words starts with same character is put into a dictionary
 	// dictionary is already sorted
-	clock_t start = clock();
+
 	for(; end < endIndex; end++)
 	{
 
@@ -71,10 +69,6 @@ void DoubleHashDictionary::createSubDictionaries()
 		}
 	}
 	addSubDictionary(beginMapChar, begin, endIndex);	
-	clock_t next = clock();
-	int time = next - start;
-	cout<<"add dictionary time:";
-	cout<<time<<endl;
 }
 
 

@@ -23,7 +23,5 @@ public:
 	HashDictionary *dict;
 	int totalNumber;
 	void splitString(string input, vector<string> &list_string);
-
-public:
 	void createHashDictionaries();
 };

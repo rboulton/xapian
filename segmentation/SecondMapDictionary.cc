@@ -1,6 +1,7 @@
 #define NOMINMAX
 #include "StdAfx.h"
 #include <algorithm>
+
 #include "SecondMapDictionary.h"
 #include "unicode.h"
 #include "DBinaryDictionary.h"

@@ -1,23 +1,21 @@
 #include "stdafx.h"
+
+#include <iostream>
+#include <fstream>
+#include <string>
+#include <vector>
+#include <algorithm>
+#include <map>
+#include "unicode.h"
 #include "HashDictionary.h"
 #include "BinaryDictionary.h"
-#include "iostream"
-#include "fstream"
-#include "string"
-#include "vector"
-#include <algorithm>
-#include <time.h>
-#include "unicode.h"
-#include "map"
-//#include <hash>
-#include <tchar.h>
 using namespace std;
 using namespace Xapian;
 
 
 HashDictionary::HashDictionary()
 {
-	//dictionaryPath = "e://dic//t-base.dic";
+	
 }
 
 HashDictionary::HashDictionary(string *ascWords, int totalCount)

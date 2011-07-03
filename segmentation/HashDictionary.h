@@ -3,7 +3,6 @@
 #include <map>
 #include <string>
 #include <vector>
-#include <hash_map>
 #include "dictionary.h"
 using namespace std;
 using namespace stdext;
@@ -31,11 +30,9 @@ public:
 	bool hit;
 	string *ascWords;
 	string dictionaryPath;
-//	map<unsigned, Node> mapNodes;
 	int size();
 	string getWord(int index);
 	virtual int search(string input,int offset,int count, unsigned mapChar);
-	//bool compareIndexChar(string, );
 	void createSubDictionary();
 	bool isSameIndex(int index, string beginMapChar);
 	dictionary *createSubDictionary(string *ascWords, int startIndex, int endIndex);

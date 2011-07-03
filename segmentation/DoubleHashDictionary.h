@@ -5,8 +5,7 @@
 #include "dictionary.h"
 #include "FirstLevelDictionary.h"
 
-class DoubleHashDictionary// :
-	//public dictionary
+class DoubleHashDictionary 
 {
 public:
 	DoubleHashDictionary(string* ascWords, int totalCount);
