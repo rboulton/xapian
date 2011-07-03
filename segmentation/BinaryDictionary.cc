@@ -51,9 +51,9 @@ int BinaryDictionary::search(string input,int offset,int count, unsigned mapChar
 	int searchResult = search(temp);
 	int index = searchResult;
 	int resultlength = -1;
+	index++;
 	if(hit == true)
-	{
-		index++;
+	{		
 		resultlength = count * 3;
 		
 	}
@@ -61,13 +61,16 @@ int BinaryDictionary::search(string input,int offset,int count, unsigned mapChar
 	
 	for(;index<endIndex;index++)
 	{
-		size_t length = ascWords[index].size();
+		size_t length = ascWords[index].size() - 1;//because word in ascWords all contains '\n' in the end
 		if( length < maxLength)
 			break;
 		if((input.size() - offset) < length)
 			break;
 		maxLength = length;
-		if(input.compare(offset,length, ascWords[index]) == 0)
+		string temp = input.substr(offset, length);
+		temp += '\n';
+		//if(input.compare(offset,length, ascWords[index]) == 0)
+		if(temp.compare(ascWords[index]) == 0)
 		{
 			hit = true;
 			resultlength = length;			

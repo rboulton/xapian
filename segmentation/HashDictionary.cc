@@ -132,20 +132,18 @@ unsigned HashDictionary::getIndexChar(string str, int index) //get the index'th 
 	for(int i = 1; i < index && it != Utf8Iterator(); i++) //
 	{
 		++it;
-	}
-	
+	}	
 
 	return *it;
-
 
 }
 
 
 
 int HashDictionary::search(string input,int offset,int count, unsigned mapChar)
-{
- 	offset = offset + (mapIndex - 1)*3;
-	unsigned index = getIndexChar(input.substr(offset,3));
+{ 	
+	int mapshift = offset + mapIndex + (mapIndex << 1) - 3; //int mapshift = offset + (mapIndex - 1)*3;
+	unsigned index = getIndexChar(input.substr(mapshift,3));
   	map<unsigned, dictionary*>::iterator it = subDictionarys.find(index);
 	if(it == subDictionarys.end())
 	{
@@ -166,7 +164,7 @@ int HashDictionary::search(string input,int offset,int count, unsigned mapChar)
 		res = subdic->search(input, offset,count + 1,0);
 
 		if(hit == true)
-			return max(mapIndex * 3, res);
+			return max(maxlength, res);
 		else
 			return res;
 	}	
