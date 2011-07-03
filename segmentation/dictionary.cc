@@ -19,3 +19,10 @@ int dictionary::size()
 {
 	return 1;
 }
+
+
+
+string dictionary::getWord(int index)
+{
+	return "";
+}

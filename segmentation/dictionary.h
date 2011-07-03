@@ -13,4 +13,5 @@ public:
 	virtual int size();
 	virtual int search(string input,int offset,int count, unsigned mapChar);
 	// void search(string input, vector<string> &output);
+	virtual string getWord(int index);
 };

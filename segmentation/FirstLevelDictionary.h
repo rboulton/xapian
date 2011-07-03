@@ -21,7 +21,9 @@ public:
 	int size()  ;
 	int search(string input,int offset);
 	unsigned getMapChar(string input,int offset);
-	dictionary* createSubDictionary(string* ascWords, int count, int index);
+	dictionary* createSubDictionary(std::string *ascWords, int beginIndex, int endIndex, int length);
 	int maxValue(int i, int j, int m, int n);
+
+	void compileDictionary();
 	
 };

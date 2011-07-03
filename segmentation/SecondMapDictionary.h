@@ -1,8 +1,8 @@
 #pragma once
-#include "dictionary.h"
 #include <string>
 #include <map>
 #include <vector>
+#include "dictionary.h"
 
 class SecondMapDictionary :
 	public dictionary
@@ -13,7 +13,7 @@ public:
 public:
 	virtual ~SecondMapDictionary();
 
-	map<unsigned, vector<string>> subs;
+	map<unsigned, vector<string> > subs;
 	map<unsigned, string> twoWordSubs;
 	string* ascWords;
 	int beginIndex;

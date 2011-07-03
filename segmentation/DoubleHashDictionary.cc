@@ -1,7 +1,6 @@
-#include "StdAfx.h"
-#include "DoubleHashDictionary.h"
 #include "stdafx.h"
-//#include "HashDictionary.h"
+#include "DoubleHashDictionary.h"
+
 #include "FirstLevelDictionary.h"
 #include "BinaryDictionary.h"
 #include "iostream"
@@ -10,14 +9,13 @@
 #include "vector"
 #include <algorithm>
 #include <time.h>
-#include "unordered_map.h"
 #include "unicode.h"
 #include "map"
 
 using namespace std;
 using namespace Xapian;
 using namespace Unicode;
-using namespace Internal;
+
 
 
 DoubleHashDictionary::DoubleHashDictionary(string* ascWords, int totalCount)
@@ -58,12 +56,15 @@ void DoubleHashDictionary::createSubDictionaries()
 	//unsigned endMapChar;
 	string strBeginChar;
 	append_utf8(strBeginChar, beginMapChar);
+
+	 // words starts with same character is put into a dictionary
+	// dictionary is already sorted
 	for(; end < endIndex; end++)
 	{
 
 		if(!isSameIndex(strBeginChar, ascWords[end])) // if the first character is not same , then the words before that is in a sub dictionary
 		{
-			addSubDictionary(beginMapChar, begin, end);
+			addSubDictionary(beginMapChar, begin, end); 
 			begin = end;
 			beginMapChar = getIndexChar(ascWords[end]);
 			strBeginChar.clear();
@@ -85,16 +86,7 @@ FirstLevelDictionary* DoubleHashDictionary::createSubDictionary(string *ascWords
 {
 	FirstLevelDictionary *subDic = new FirstLevelDictionary(ascWords, startIndex, endIndex, totalCount);
 	return subDic;
-	/*
-	if((endIndex - beginIndex) < 16)
-	{
-		dictionary *subDic = new BinaryDictionary(ascWords, startIndex, endIndex, totalCount);
-		return subDic;
-	}else
-	{
-		dictionary *subDic = new FirstLevelDictionary(ascWords, startIndex, endIndex, totalCount);
-		return subDic;
-	}*/
+
 }
 
 unsigned DoubleHashDictionary::getIndexChar(string str)
@@ -136,27 +128,27 @@ void DoubleHashDictionary::search(string input, vector<string> &output)
 	unsigned inputLength = input.size();
 	FirstLevelDictionary *dic;
 	
-	while(offset < inputLength)
+	while(offset < inputLength)  //characters before offset is already segmented
 	{
-		unsigned mapCode = getIndexChar(input, offset);
-		map<unsigned, FirstLevelDictionary*>::iterator it = subDictionaries.find(mapCode);
+		unsigned mapCode = getIndexChar(input, offset); //get the unicode of first Chinese character from the rest of input.
+		map<unsigned, FirstLevelDictionary*>::iterator it = subDictionaries.find(mapCode); //get the dictionary according the first Chinese character's unicode value
 		
-		if(it != subDictionaries.end())
+		if(it != subDictionaries.end())  //if the Chinese character is in the dictionary
 		{
 			dic = it->second;
-			index = dic->search(input, offset);
+			index = dic->search(input, offset); //search the possible word from subDictionary
 			if(index > 0)
 			{
-				output.push_back( input.substr(offset, index-offset));
+				output.push_back( input.substr(offset, index)); //if there exists word, just put it in the output, and move to the rest of input string
 				offset += index;
 			}else
 			{
-				output.push_back(input.substr(offset, 3));
+				output.push_back(input.substr(offset, 3));//if there is no such word, just move to next character.
 				offset += 3;
 			}
 		}else
 		{
-			output.push_back(input.substr(offset,3));
+			output.push_back(input.substr(offset,3)); //if there is no word leading by this Chinese character
 			offset += 3;
 		}
 		

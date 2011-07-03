@@ -28,6 +28,7 @@ SecondMapDictionary::SecondMapDictionary(std::string *ascWords, int beginIndex, 
 
 void SecondMapDictionary::createDictionary()
 {
+	
 	int index = beginIndex;
 	unsigned indexChar;
 	string str;
@@ -51,37 +52,28 @@ void SecondMapDictionary::createDictionary()
 		string strTemp;
 		string strIndex = ascWords[index].substr(3,3); 
 		indexChar = getCharValue(strIndex);
-		words.push_back(ascWords[index++]);
 		while(index < endIndex)		{
 			
 			strTemp = ascWords[index];
-			if(isSameIndex(strTemp,indexChar) == true)
+			if(isSameIndex(strTemp,indexChar))
 			{
-				words.push_back(strTemp); //if the keyword is same ,just add this word to vector
-			}
-			else //if the keyword is not same, insert pair<unsigned, vector<string> >,clear the vector and compute next keyword
-			{
-				subs.insert(pair<unsigned,vector<string> >(indexChar,words));
-				words.clear();
-				words.push_back(strTemp);
+				//dictionary *=
+				
 				string strIndex = ascWords[index].substr(3,3); 
 				indexChar = getCharValue(strIndex);		
 			}
 			index++;
-		}
-		subs.insert(pair<unsigned,vector<string> >(indexChar,words));
+		}		
 		
 	}
+	
 
 }
 
 bool SecondMapDictionary::isSameIndex(string str, unsigned index)  //the second chinese word as hash code
 {	
 	unsigned it = getCharValue(str.substr(3,3));
-	if(it == index)
-		return true;
-	else 
-		return false;
+	return it == index;
 }
 
 unsigned SecondMapDictionary::getCharValue(string str) // get the unicode value of a chinese word;

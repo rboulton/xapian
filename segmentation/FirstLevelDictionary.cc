@@ -1,11 +1,16 @@
 #define NOMINMAX
 
-#include "StdAfx.h"
+#include "stdafx.h"
+
 #include "FirstLevelDictionary.h"
 #include "BinaryDictionary.h"
 #include "SecondMapDictionary.h"
 #include "unicode.h"
 #include <algorithm>
+#include <iostream>
+#include <string>
+#include "dictionary.h"
+using namespace std;
 using namespace Xapian;
 
 FirstLevelDictionary::FirstLevelDictionary()
@@ -18,61 +23,104 @@ FirstLevelDictionary::~FirstLevelDictionary()
 
 FirstLevelDictionary::FirstLevelDictionary(string* ascWords, int beginIndex, int endIndex, int totalCount)
 {
-	maxlength = 0;
-	string *two = new string[2000];
-	string *three = new string[1000];
-	string *four = new string[1000];
-	string *mult = new string[1000];
+	
+	maxlength = 0; //maxlength means the length of the longest word leading by the same character
+	
 	//int begin = beginIndex;
 
 	//int end = begin + 1;
+	
 	int index = beginIndex;
-	int i = 0, j =0,m =0,n = 0;
 	string str;
 	int size;
 	/*
 		put words in different subdictionary, distinguished by the length of each word.
 	*/
+	//two character words
+	
+	int begin = index;
 	for(;index<endIndex;index++)
 	{
-		str = ascWords[index];
-		size = str.size() / 3;  //divided by 3 because the general chinese character in UTF-8 contains 3 byte;
-		if(size == 2)
+		//str = ascWords[index].size;
+		size = ascWords[index].size();  //divided by 3 because the general chinese character in UTF-8 contains 3 byte;
+		if(size != 6)
 		{
-			two[i++] = str;
-		}else if(size == 3)
-		{
-			three[j++] = str;
-		}else if(size == 4)
-		{
-			four[m++] = str;
-		}else
-		{
-			mult[n++] = str;
+			createSubDictionary(ascWords, begin, index,2);
+			break;
 		}
-
-		maxlength = max(maxlength, size);
+			
 	}
+	if((index - begin) > 1)
+		maxlength = 2;
+	
+//three character words
+	begin = index;
+	for(;index<endIndex;index++)
+	{
+		//str = ascWords[index];
+		size =  ascWords[index].size();  //divided by 3 because the general chinese character in UTF-8 contains 3 byte;
+		if(size != 9)
+		{
+			createSubDictionary(ascWords, begin, index,3);
+			break;
+		}
+			
+	}
+	if((index - begin) > 1)
+		maxlength = 3;
 
-	twoWordDic  = createSubDictionary(two, i, 2);
-	threeWordDic = createSubDictionary(three,j,3);
-	fourWordDic = createSubDictionary(four, m, 4);
-	multWordDic = createSubDictionary(mult,n,5);
+	//four character words
+	begin = index;
+	for(;index<endIndex;index++)
+	{
+	//	str = ascWords[index];
+		size = ascWords[index].size() ;  //divided by 3 because the general chinese character in UTF-8 contains 3 byte;
+		if(size != 12)
+		{
+			createSubDictionary(ascWords, begin, index,3);
+			break;
+		}
+			
+	}
+	if((index - begin) > 1)
+		maxlength = 4;
+
+
+	//mult character words
+	begin = index;
+	for(;index<endIndex;index++)
+	{
+	///	str = ascWords[index];
+		size =  ascWords[index].size() / 3;  //divided by 3 because the general chinese character in UTF-8 contains 3 byte;
+
+		maxlength = max(maxlength, size);			
+	}
+	createSubDictionary(ascWords, begin, index,5);
+	
+
+}
+
+
+void FirstLevelDictionary::compileDictionary()
+{
+	
 }
 
 
 
-
-dictionary *FirstLevelDictionary::createSubDictionary(std::string *ascWords, int count, int length)
+dictionary *FirstLevelDictionary::createSubDictionary(std::string *ascWords, int beginIndex, int endIndex, int length)
 {
 	dictionary *dic;
-	if(count < 16) //if the number of words is less than 16, it is more likely using binary search is quicker, so , it using binary search.
+	int count = endIndex - beginIndex;
+	
+	
+	if(count < 128) //if the number of words is less than 16, it is more likely using binary search is quicker, so , it using binary search.
 	{
-		dic = new BinaryDictionary(ascWords, count);
+		dic = new BinaryDictionary(ascWords, beginIndex, endIndex, totalCount);
 	}
-	else
+	else    
 	{
-		dic = new SecondMapDictionary(ascWords, 0,count,count,length);
+		dic = new SecondMapDictionary(ascWords, beginIndex,endIndex,count,length);
 	}
 
 	return dic;
@@ -89,14 +137,20 @@ int FirstLevelDictionary::size()
 
 int FirstLevelDictionary::search(string input,int offset)
 {
-	unsigned mapChar = getMapChar(input, offset);
+	unsigned mapChar = getMapChar(input, offset);  //if the subDictionary is sorted in map, the key word will be the unicode value of second Chinese character
 
-	int two = twoWordDic->search(input,offset,2,mapChar);
-	int three = threeWordDic->search(input,offset,3,mapChar);
-	int four = fourWordDic->search(input,offset,4,mapChar);
-	int mult = multWordDic->search(input, offset,maxlength, mapChar);
-	return maxValue(two, three, four, mult);
+	int length;
 
+	if((length = multWordDic->search(input, offset,maxlength, mapChar) )!= -1)
+		return length;
+	if((length = fourWordDic->search(input,offset,4,mapChar)) != -1)
+		return length;
+	if((length= threeWordDic->search(input,offset,3,mapChar)) != -1)
+		return length;
+	if((length = twoWordDic->search(input,offset,2,mapChar)) != -1)
+		return length;
+	
+	return -1;
 }
 
 int FirstLevelDictionary::maxValue(int i, int j, int m, int n)
@@ -106,11 +160,9 @@ int FirstLevelDictionary::maxValue(int i, int j, int m, int n)
 	return max(temp1, temp2);
 }
 
-unsigned FirstLevelDictionary::getMapChar(string input,int offset)
+unsigned FirstLevelDictionary::getMapChar(string input,int offset) //get the unicode value of the second Chinese character of the rest input string
 {
-	string str = input.substr(offset,9);
+	string str = input.substr(offset + 3, 3);
 	Utf8Iterator it(str);
-	++it;
-	++it;
 	return *it;	
 }

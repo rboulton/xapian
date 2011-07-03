@@ -3,6 +3,8 @@
 #include <vector>
 #include "DoubleHashDictionary.h"
 #include "dictionary.h"
+#include "HashDictionary.h"
+#include "util.h"
 
 class PrepareDictionaries
 {
@@ -12,9 +14,18 @@ public:
 	~PrepareDictionaries();
 
 	void loadDictionares();
-	void search(string input, vector<string> &output);
+	void loadDictionary();
+	void createDoubleHashDictionries();
+	void searchHash(string input, vector<string> &output);
+	void searchDoubleHash(string input, vector<string> &output);
 	string *ascWords;
+	charArray *ascInputs;
 	DoubleHashDictionary *dic;
+	HashDictionary *dict;
 	int totalNumber;
+	void splitString(string input, vector<string> &list_string);
 
+public:
+
+	void createHashDictionaries();
 };

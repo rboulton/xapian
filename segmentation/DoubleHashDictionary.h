@@ -1,8 +1,8 @@
 #pragma once
-#include "dictionary.h"
 #include <string>
 #include <map>
 #include <vector>
+#include "dictionary.h"
 #include "FirstLevelDictionary.h"
 
 class DoubleHashDictionary// :
@@ -28,8 +28,6 @@ public:
 	void createSubDictionaries();
 	unsigned getIndexChar(string str);
 	unsigned getIndexChar(string str, int offset);
-//	bool search(string input);
-	//vector<string> search(string input,vector<string> &output);
 	bool isSameIndex(string strBeginIndex, string str);
 	void addSubDictionary(unsigned hashChar, int beginIndex, int endIndex);
 	FirstLevelDictionary *createSubDictionary(string *ascWords, int startIndex, int endIndex);
