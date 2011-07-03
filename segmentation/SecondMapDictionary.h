@@ -3,6 +3,7 @@
 #include <map>
 #include <vector>
 #include "dictionary.h"
+#include "DBinaryDictionary.h"
 
 class SecondMapDictionary :
 	public dictionary
@@ -13,7 +14,7 @@ public:
 public:
 	virtual ~SecondMapDictionary();
 
-	map<unsigned, vector<string> > subs;
+	map<unsigned,DBinaryDictionary* > subs;
 	map<unsigned, string> twoWordSubs;
 	string* ascWords;
 	int beginIndex;

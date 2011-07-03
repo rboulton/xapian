@@ -13,14 +13,20 @@ void testDoubleDictionary();
 
 int _tmain(int argc, _TCHAR* argv[])
 {
-	test1();	
+	
+	clock_t start = clock();
+	testDoubleDictionary();
+	clock_t finish = clock();
+	int time = finish - start;
+	cout<<time<<endl;
+	
 }
 
 
-void test1() // test the algorithm which is used in Paoding 
+void test1()
 {
 	
-	ifstream infile("chinese6.txt"); // the chinese1.txt is the filename to be operated
+	ifstream infile("chinese7.txt"); // the chinese1.txt is the filename to be operated
 	if(!infile){
 		cerr<< "unable to open file";
 		return ;
@@ -65,7 +71,7 @@ void test1() // test the algorithm which is used in Paoding
 void testDoubleDictionary()
 {
 
-	ifstream infile("chinese2.txt"); // the chinese1.txt is the filename to be operated
+	ifstream infile("chinese7.txt"); // the chinese1.txt is the filename to be operated
 	if(!infile){
 		cerr<< "unable to open file";
 		return ;

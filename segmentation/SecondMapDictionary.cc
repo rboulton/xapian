@@ -3,6 +3,7 @@
 #include <algorithm>
 #include "SecondMapDictionary.h"
 #include "unicode.h"
+#include "DBinaryDictionary.h"
 using namespace Xapian;
 
 
@@ -27,8 +28,7 @@ SecondMapDictionary::SecondMapDictionary(std::string *ascWords, int beginIndex, 
 }
 
 void SecondMapDictionary::createDictionary()
-{
-	
+{	
 	int index = beginIndex;
 	unsigned indexChar;
 	string str;
@@ -48,29 +48,26 @@ void SecondMapDictionary::createDictionary()
 		//so, still choosing the unicode value of the second Chinese character as keyword
 		//but,each unicode indicate a vector<string>
 
-		vector<string> words;
 		string strTemp;
 		string strIndex = ascWords[index].substr(3,3); 
 		indexChar = getCharValue(strIndex);
-		words.push_back(ascWords[index++]);
-		while(index < endIndex)		{
-			
+		int beginIndex = index;
+		
+		for(;index<endIndex;index++)
+		{
 			strTemp = ascWords[index];
-			if(isSameIndex(strTemp,indexChar) == true)
+			if(!isSameIndex(strTemp,indexChar) ) //if the keyword is not same, insert pair<unsigned, DBinaryDictionary*>,clear the vector and compute next keyword
 			{
-				words.push_back(strTemp); //if the keyword is same ,just add this word to vector
-			}
-			else //if the keyword is not same, insert pair<unsigned, vector<string> >,clear the vector and compute next keyword
-			{
-				subs.insert(pair<unsigned,vector<string> >(indexChar,words));
-				words.clear();
-				words.push_back(strTemp);
+				DBinaryDictionary * dic = new DBinaryDictionary(ascWords, beginIndex, index, 0);
+				subs.insert(pair<unsigned,DBinaryDictionary* >(indexChar,dic));
+				beginIndex = index;
 				string strIndex = ascWords[index].substr(3,3); 
 				indexChar = getCharValue(strIndex);		
 			}
-			index++;
+			
 		}
-		subs.insert(pair<unsigned,vector<string> >(indexChar,words));
+		DBinaryDictionary * dic = new DBinaryDictionary(ascWords, beginIndex, index, 0);
+		subs.insert(pair<unsigned,DBinaryDictionary* >(indexChar,dic));
 		
 	}	
 
@@ -105,7 +102,8 @@ int SecondMapDictionary::size()
 
 int SecondMapDictionary::search(string input,int offset,int count, unsigned mapChar)
 {
-	string strTemp = input.substr(offset, count*3);			
+	string strTemp = input.substr(offset, count);	
+	strTemp += '\n';
 	unsigned index = mapChar;
 	if(count == 6)
 	{
@@ -121,16 +119,19 @@ int SecondMapDictionary::search(string input,int offset,int count, unsigned mapC
 	else 
 	{
 		//if check words whose length is more than 2,
-		map<unsigned, vector<string> >::iterator it = subs.find(index);
+		map<unsigned, DBinaryDictionary* >::iterator it = subs.find(index);
 		if(it == subs.end())
 		{
 			return -1;
 		}else
 		{
+			DBinaryDictionary *dic = it->second;
+			return dic->search(input, offset, count, mapChar);
+			/*
 			vector<string> words = it->second;
 			if(count == 9 || count == 12)
 			{
-				vector<string>::iterator result = find(words.begin(),words.end(),input.substr(offset, count*3));
+				vector<string>::iterator result = find(words.begin(),words.end(),strTemp);
 				if(result == words.end())
 					return -1;
 				else
@@ -139,20 +140,25 @@ int SecondMapDictionary::search(string input,int offset,int count, unsigned mapC
 			{
 				string word;
 				int maxlength = -1;
-				int size;
+				int size = 12;
 				for(vector<string>::iterator iter = words.begin(); iter != words.end();iter++)
 				{
+					if(size > word.size())
+						break;
+
 					word = *iter;
-					if(input.compare(offset,word.size(),word) == 0)
-					{
-						size = word.size();
+					strTemp = input.substr(offset, word.size() -1);
+					size = word.size();
+					if(strTemp.compare(word) == 0)
+					{					
 						maxlength = max(maxlength, size);
-					}
+					}					
 
 				}
 
 				return maxlength;
 			}
+			*/
 		}
 	}
 	

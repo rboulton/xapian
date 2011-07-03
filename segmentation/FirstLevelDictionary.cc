@@ -23,7 +23,7 @@ FirstLevelDictionary::~FirstLevelDictionary()
 
 FirstLevelDictionary::FirstLevelDictionary(string* ascWords, int beginIndex, int endIndex, int totalCount)
 {
-	
+
 	maxlength = 0; //maxlength means the length of the longest word leading by the same character
 	
 	int index = beginIndex;
@@ -37,13 +37,14 @@ FirstLevelDictionary::FirstLevelDictionary(string* ascWords, int beginIndex, int
 	for(;index<endIndex;index++)
 	{
 		size = ascWords[index].size();  
-		if(size != 6)  //the length of two character chinese word is 6 because the general chinese character in UTF-8 contains 3 byte;
+		if(size != 7)  //the length of two character chinese word is 6 because the general chinese character in UTF-8 contains 3 byte;
 		{
-			createSubDictionary(ascWords, begin, index,6);
+			
 			break;
 		}
 			
 	}
+	twoWordDic = createSubDictionary(ascWords, begin, index,6);
 
 	if((index - begin) > 1) // maxlength = 2 means the longest word so far contans two characters 
 		maxlength = 6;
@@ -54,13 +55,13 @@ FirstLevelDictionary::FirstLevelDictionary(string* ascWords, int beginIndex, int
 	{
 		//str = ascWords[index];
 		size =  ascWords[index].size();  
-		if(size != 9)  //the length of two character chinese word is 9 
-		{
-			createSubDictionary(ascWords, begin, index,9);
+		if(size != 10)  //the length of two character chinese word is 9 
+		{			
 			break;
 		}
 			
 	}
+	threeWordDic = createSubDictionary(ascWords, begin, index,9);
 	if((index - begin) > 1)
 		maxlength = 9;
 
@@ -70,13 +71,13 @@ FirstLevelDictionary::FirstLevelDictionary(string* ascWords, int beginIndex, int
 	{
 	//	str = ascWords[index];
 		size = ascWords[index].size() ;  
-		if(size != 12)  //the length of two character chinese word is 12
-		{
-			createSubDictionary(ascWords, begin, index,12);
+		if(size != 13)  //the length of two character chinese word is 12
+		{			
 			break;
 		}
 			
 	}
+	fourWordDic = createSubDictionary(ascWords, begin, index,12);
 	if((index - begin) > 1)
 		maxlength = 12;
 
@@ -85,19 +86,12 @@ FirstLevelDictionary::FirstLevelDictionary(string* ascWords, int beginIndex, int
 	begin = index;
 	for(;index<endIndex;index++)
 	{
-		size = ascWords[index].size(); 
+		size = ascWords[index].size() - 1; 
 		maxlength = max(maxlength, size);			
 	}
-	createSubDictionary(ascWords, begin, index,15);
+	multWordDic = createSubDictionary(ascWords, begin, index,15);
 
 }
-
-
-void FirstLevelDictionary::compileDictionary()
-{
-	
-}
-
 
 
 dictionary *FirstLevelDictionary::createSubDictionary(std::string *ascWords, int beginIndex, int endIndex, int length)
@@ -145,12 +139,6 @@ int FirstLevelDictionary::search(string input,int offset)
 	return -1;
 }
 
-int FirstLevelDictionary::maxValue(int i, int j, int m, int n)
-{
-	int temp1 = max(i,j);
-	int temp2 = max(m, n);
-	return max(temp1, temp2);
-}
 
 unsigned FirstLevelDictionary::getMapChar(string input,int offset) //get the unicode value of the second Chinese character of the rest input string
 {
