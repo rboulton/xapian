@@ -37,7 +37,7 @@ void PrepareDictionaries::loadDictionares()
 	start = clock();	
 	ascWords = new string[230000];
 	FILE *fp;
-	if((fp=fopen("ut-base.dic","r"))==NULL)
+	if((fp=fopen("t-base.dic","r"))==NULL)
 	{
 		cout<<"file not open"<<endl;
 		exit(1);
