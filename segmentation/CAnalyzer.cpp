@@ -19,14 +19,18 @@ int _tmain(int argc, _TCHAR* argv[])
 	clock_t finish = clock();
 	int time = finish - start;
 	cout<<time<<endl;
-	
+	 start = clock();
+	test1();
+	 finish = clock();
+	time = finish - start;
+	cout<<time<<endl;
 }
 
 
 void test1()
 {
 	
-	ifstream infile("chinese7.txt"); // the chinese1.txt is the filename to be operated
+	ifstream infile("chinese9.txt"); // the chinese1.txt is the filename to be operated
 	if(!infile){
 		cerr<< "unable to open file";
 		return ;
@@ -53,7 +57,7 @@ void test1()
 		strOutput += "//";
 	}
 
-	ofstream fout("3.txt");
+	ofstream fout("4.txt");
     if(!fout)
     {
         fout << "Cannot open output file\n";
@@ -71,7 +75,7 @@ void test1()
 void testDoubleDictionary()
 {
 
-	ifstream infile("chinese7.txt"); // the chinese1.txt is the filename to be operated
+	ifstream infile("chinese9.txt"); // the chinese1.txt is the filename to be operated
 	if(!infile){
 		cerr<< "unable to open file";
 		return ;
