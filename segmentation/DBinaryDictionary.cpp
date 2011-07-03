@@ -43,66 +43,37 @@ int DBinaryDictionary::size()
 
 
 int DBinaryDictionary::search(string input,int offset,int count, unsigned mapChar){ 
-	/*
-	if(count <= 4)  //if the chinese word is no more than 4, just check whether it is in dictionay 
-	{
-		string temp = input.substr(offset, count * 3);
-		if(true == search(temp))
-		{
-			return count * 3;
-		}
-		else
-		{
-			return -1;
-		}
-	}else //if checking five or more leading words, just check every word in dictionay to find out whether it is in the input string, pick the longes one 
-	{
-		int index = beginIndex;
-		string temp;
-		int maxlength = -1;
-		int size;
-		for(;index<endIndex;index++)
-		{
-			temp = ascWords[index];
-			if(input.compare(offset, temp.size(), temp) == 0)
-			{
-				size = temp.size();
-
-				maxlength = max(maxlength, size);			
-			}
-		}
-
-		return maxlength;
-		
-	}
-
-	*/
+	
 	hit = false;
-	string temp = input.substr(offset, count * 3);
+	string temp = input.substr(offset, count);
+	temp += '\n';
 	int searchResult = search(temp);
 	int index = searchResult;
 	int resultlength = -1;
 	if(hit == true)
 	{
 		index++;
-		resultlength = count * 3;
+		resultlength = count;
 		
 	}
-	size_t maxLength = count * 3;
+	size_t maxLength = count;
 	
-	for(;index<endIndex;index++)
-	{
-		size_t length = ascWords[index].size();
-		if( length < maxLength)
-			break;
-		if((input.size() - offset) < length)
-			break;
-		maxLength = length;
-		if(input.compare(offset,length, ascWords[index]) == 0)
+	if(count > 12)
+	{		
+		for(;index<endIndex;index++)
 		{
-			hit = true;
-			resultlength = length;			
-		}	
+			size_t length = ascWords[index].size();
+			if( length < maxLength)
+				break;
+			if((input.size() - offset) < length)
+				break;
+			maxLength = length;
+			if(input.compare(offset,length, ascWords[index]) == 0)
+			{
+				hit = true;
+				resultlength = length;			
+			}	
+		}
 	}
 	return resultlength;
 	

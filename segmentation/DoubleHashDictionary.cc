@@ -53,12 +53,12 @@ void DoubleHashDictionary::createSubDictionaries()
 	int begin = beginIndex;
 	int end = begin + 1;
 	unsigned beginMapChar = getIndexChar(ascWords[begin]); //get the first chinese character from beginning word, 
-	//unsigned endMapChar;
-	string strBeginChar;
-	append_utf8(strBeginChar, beginMapChar);
+	string strBeginChar = ascWords[begin].substr(0,3);
+	
 
 	 // words starts with same character is put into a dictionary
 	// dictionary is already sorted
+	clock_t start = clock();
 	for(; end < endIndex; end++)
 	{
 
@@ -67,11 +67,14 @@ void DoubleHashDictionary::createSubDictionaries()
 			addSubDictionary(beginMapChar, begin, end); 
 			begin = end;
 			beginMapChar = getIndexChar(ascWords[end]);
-			strBeginChar.clear();
-			append_utf8(strBeginChar, beginMapChar);
+			strBeginChar = ascWords[begin].substr(0,3);
 		}
 	}
 	addSubDictionary(beginMapChar, begin, endIndex);	
+	clock_t next = clock();
+	int time = next - start;
+	cout<<"add dictionary time:";
+	cout<<time<<endl;
 }
 
 

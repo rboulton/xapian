@@ -3,7 +3,7 @@
 #include "stdafx.h"
 
 #include "FirstLevelDictionary.h"
-#include "BinaryDictionary.h"
+#include "DBinaryDictionary.h"
 #include "SecondMapDictionary.h"
 #include "unicode.h"
 #include <algorithm>
@@ -26,77 +26,69 @@ FirstLevelDictionary::FirstLevelDictionary(string* ascWords, int beginIndex, int
 	
 	maxlength = 0; //maxlength means the length of the longest word leading by the same character
 	
-	//int begin = beginIndex;
-
-	//int end = begin + 1;
-	
 	int index = beginIndex;
 	string str;
 	int size;
-	/*
-		put words in different subdictionary, distinguished by the length of each word.
-	*/
+
+	//because the dictionary is already compiled, so it is possible to continue this
 	//two character words
 	
 	int begin = index;
 	for(;index<endIndex;index++)
 	{
-		//str = ascWords[index].size;
-		size = ascWords[index].size();  //divided by 3 because the general chinese character in UTF-8 contains 3 byte;
-		if(size != 6)
+		size = ascWords[index].size();  
+		if(size != 6)  //the length of two character chinese word is 6 because the general chinese character in UTF-8 contains 3 byte;
 		{
-			createSubDictionary(ascWords, begin, index,2);
+			createSubDictionary(ascWords, begin, index,6);
 			break;
 		}
 			
 	}
-	if((index - begin) > 1)
-		maxlength = 2;
+
+	if((index - begin) > 1) // maxlength = 2 means the longest word so far contans two characters 
+		maxlength = 6;
 	
-//three character words
+	//three character words
 	begin = index;
 	for(;index<endIndex;index++)
 	{
 		//str = ascWords[index];
-		size =  ascWords[index].size();  //divided by 3 because the general chinese character in UTF-8 contains 3 byte;
-		if(size != 9)
+		size =  ascWords[index].size();  
+		if(size != 9)  //the length of two character chinese word is 9 
 		{
-			createSubDictionary(ascWords, begin, index,3);
+			createSubDictionary(ascWords, begin, index,9);
 			break;
 		}
 			
 	}
 	if((index - begin) > 1)
-		maxlength = 3;
+		maxlength = 9;
 
 	//four character words
 	begin = index;
 	for(;index<endIndex;index++)
 	{
 	//	str = ascWords[index];
-		size = ascWords[index].size() ;  //divided by 3 because the general chinese character in UTF-8 contains 3 byte;
-		if(size != 12)
+		size = ascWords[index].size() ;  
+		if(size != 12)  //the length of two character chinese word is 12
 		{
-			createSubDictionary(ascWords, begin, index,3);
+			createSubDictionary(ascWords, begin, index,12);
 			break;
 		}
 			
 	}
 	if((index - begin) > 1)
-		maxlength = 4;
+		maxlength = 12;
 
 
 	//mult character words
 	begin = index;
 	for(;index<endIndex;index++)
 	{
-	///	str = ascWords[index];
-		size =  ascWords[index].size() / 3;  //divided by 3 because the general chinese character in UTF-8 contains 3 byte;
-
+		size = ascWords[index].size(); 
 		maxlength = max(maxlength, size);			
 	}
-	createSubDictionary(ascWords, begin, index,5);
-	
+	createSubDictionary(ascWords, begin, index,15);
 
 }
 
@@ -114,9 +106,9 @@ dictionary *FirstLevelDictionary::createSubDictionary(std::string *ascWords, int
 	int count = endIndex - beginIndex;
 	
 	
-	if(count < 128) //if the number of words is less than 16, it is more likely using binary search is quicker, so , it using binary search.
+	if(count < 16) //if the number of words is less than 16, it is more likely using binary search is quicker, so , it using binary search.
 	{
-		dic = new BinaryDictionary(ascWords, beginIndex, endIndex, totalCount);
+		dic = new DBinaryDictionary(ascWords, beginIndex, endIndex, totalCount);
 	}
 	else    
 	{
@@ -143,11 +135,11 @@ int FirstLevelDictionary::search(string input,int offset)
 
 	if((length = multWordDic->search(input, offset,maxlength, mapChar) )!= -1)
 		return length;
-	if((length = fourWordDic->search(input,offset,4,mapChar)) != -1)
+	if((length = fourWordDic->search(input,offset,12,mapChar)) != -1) 
 		return length;
-	if((length= threeWordDic->search(input,offset,3,mapChar)) != -1)
+	if((length= threeWordDic->search(input,offset,9,mapChar)) != -1)
 		return length;
-	if((length = twoWordDic->search(input,offset,2,mapChar)) != -1)
+	if((length = twoWordDic->search(input,offset,6,mapChar)) != -1)
 		return length;
 	
 	return -1;

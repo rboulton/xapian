@@ -1,4 +1,3 @@
-
 #include "stdafx.h"
 #include "HashDictionary.h"
 #include "BinaryDictionary.h"
@@ -15,8 +14,6 @@
 using namespace std;
 using namespace Xapian;
 
-extern int operation;
-extern int classNumber;
 
 HashDictionary::HashDictionary()
 {
@@ -59,11 +56,9 @@ int HashDictionary::size()
 
 void HashDictionary::createSubDictionary()
 {
-	classNumber++;
 	if(start >= totalCount){
 		return;
 	}
-
 
 	//identify the words starting with same character
 	int beginIndex = start;
@@ -72,7 +67,6 @@ void HashDictionary::createSubDictionary()
 
 	int offset = (mapIndex - 1) * 3;
 	string beginMapChar = ascWords[start].substr(offset, 3);
-//	unsigned ubeginMapChar = getIndexChar(beginMapChar);
 	unsigned ubeginMapChar = getIndexChar(beginMapChar);
 	unsigned endMapChar;
 	for(; endIndex < end; endIndex++)
@@ -85,8 +79,6 @@ void HashDictionary::createSubDictionary()
 			beginIndex = endIndex;
 			beginMapChar = ascWords[endIndex].substr(offset, 3);
 			ubeginMapChar = getIndexChar(beginMapChar);
-		//	Utf8Iterator it(beginMapChar);
-		//	ubeginMapChar =  *it;
 		}
 	}
 	addSubDictionary(ubeginMapChar, beginIndex, end);	
@@ -103,9 +95,7 @@ bool HashDictionary::isSameIndex(int index, string beginMapChar)
 void HashDictionary::addSubDictionary(unsigned hashChar, int beginIndex, int endIndex)
 {
 	dictionary *subDic = createSubDictionary(ascWords,beginIndex, endIndex);
-	subDictionarys.insert(pair<unsigned, dictionary*>(hashChar, subDic));
-	//subs.insert(pair<unsigned, string>(hashChar, ascWords[beginIndex]));
-	operation= operation + 1;
+	subDictionarys.insert(pair<unsigned, dictionary*>(hashChar, subDic));	
 }
 
 dictionary* HashDictionary::createSubDictionary(string *ascWords, int beginIndex, int endIndex)
@@ -154,8 +144,6 @@ unsigned HashDictionary::getIndexChar(string str, int index) //get the index'th 
 
 int HashDictionary::search(string input,int offset,int count, unsigned mapChar)
 {
-	
-	//Utf8Iterator it(input.substr(offset));
  	offset = offset + (mapIndex - 1)*3;
 	unsigned index = getIndexChar(input.substr(offset,3));
   	map<unsigned, dictionary*>::iterator it = subDictionarys.find(index);
@@ -165,15 +153,20 @@ int HashDictionary::search(string input,int offset,int count, unsigned mapChar)
 	}
 	else 
 	{
-		int res = 0;
+		int res = -1;
+		int maxlength = -1;
 		dictionary *subdic = it->second;
 		string str = subdic->getWord(0);
-		if(str.size() == mapIndex)
+		if(str.size() == mapIndex * 3 + 1)
+		{
 			hit = true;
-		else
-			res = subdic->search(input, offset,count + 1,0);
+			maxlength = mapIndex * 3;
+		}
+		
+		res = subdic->search(input, offset,count + 1,0);
+
 		if(hit == true)
-			return max(mapIndex, res);
+			return max(mapIndex * 3, res);
 		else
 			return res;
 	}	

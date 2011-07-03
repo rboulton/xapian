@@ -21,7 +21,6 @@ using namespace Internal;
 
 PrepareDictionaries::PrepareDictionaries()
 {
-	loadDictionares();
 }
 
 PrepareDictionaries::~PrepareDictionaries()
@@ -36,7 +35,7 @@ void PrepareDictionaries::loadDictionares()
 		
 	ascWords = new string[230000];
 	FILE *fp;
-	if((fp=fopen("ut-base.dic","r"))==NULL)
+	if((fp=fopen("compiled-base.dic","r"))==NULL)
 	{
 		cout<<"file not open"<<endl;
 		exit(1);
@@ -47,8 +46,30 @@ void PrepareDictionaries::loadDictionares()
 	while(fgets(aa, 100, fp) != NULL)
 	{
 		ascWords[totalNumber++] = aa;
+	}	
+		
+}
+
+
+void PrepareDictionaries::loadHashDictionares()
+{
+	string str;
+
+		
+	ascWords = new string[230000];
+	FILE *fp;
+	if((fp=fopen("t-base.dic","r"))==NULL)
+	{
+		cout<<"file not open"<<endl;
+		exit(1);
 	}
+	totalNumber = 0;
+	char aa[100];
 	
+	while(fgets(aa, 100, fp) != NULL)
+	{
+		ascWords[totalNumber++] = aa;
+	}	
 		
 }
 
@@ -100,7 +121,11 @@ void PrepareDictionaries::createHashDictionaries()
 void PrepareDictionaries::createDoubleHashDictionries()
 {
 
-	//dic  = new HashDictionary(ascWords, totalNumber);
+	clock_t start = clock();
 	dic = new DoubleHashDictionary(ascWords, totalNumber);
+	clock_t next = clock();
+	int time = next - start;
+	cout<<"map time:";
+	cout<<time<<endl;
 
 }

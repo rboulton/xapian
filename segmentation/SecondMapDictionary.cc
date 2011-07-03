@@ -32,7 +32,7 @@ void SecondMapDictionary::createDictionary()
 	int index = beginIndex;
 	unsigned indexChar;
 	string str;
-	if (wordLength == 2)  //if word length is 2, then each second charater is different, so using the unicode value of the second Chinese character as keyword
+	if (wordLength == 6)  //if word length is 6, then each second charater is different, so using the unicode value of the second Chinese character as keyword
 						//each keyword indicate unique string
 	{
 		while(index < endIndex)
@@ -52,23 +52,31 @@ void SecondMapDictionary::createDictionary()
 		string strTemp;
 		string strIndex = ascWords[index].substr(3,3); 
 		indexChar = getCharValue(strIndex);
+		words.push_back(ascWords[index++]);
 		while(index < endIndex)		{
 			
 			strTemp = ascWords[index];
-			if(isSameIndex(strTemp,indexChar))
+			if(isSameIndex(strTemp,indexChar) == true)
 			{
-				//dictionary *=
-				
+				words.push_back(strTemp); //if the keyword is same ,just add this word to vector
+			}
+			else //if the keyword is not same, insert pair<unsigned, vector<string> >,clear the vector and compute next keyword
+			{
+				subs.insert(pair<unsigned,vector<string> >(indexChar,words));
+				words.clear();
+				words.push_back(strTemp);
 				string strIndex = ascWords[index].substr(3,3); 
 				indexChar = getCharValue(strIndex);		
 			}
 			index++;
-		}		
+		}
+		subs.insert(pair<unsigned,vector<string> >(indexChar,words));
 		
-	}
-	
+	}	
 
 }
+
+
 
 bool SecondMapDictionary::isSameIndex(string str, unsigned index)  //the second chinese word as hash code
 {	
@@ -99,12 +107,12 @@ int SecondMapDictionary::search(string input,int offset,int count, unsigned mapC
 {
 	string strTemp = input.substr(offset, count*3);			
 	unsigned index = mapChar;
-	if(count == 2)
+	if(count == 6)
 	{
 		map<unsigned, string>::iterator it = twoWordSubs.find(index);
 		if( it != twoWordSubs.end())
 		{
-			return 2 * 3; //indicate that two word is existed;
+			return count; //indicate that two word is existed;
 		}else
 		{
 			return -1; //indicate that two word is not existed
@@ -120,13 +128,13 @@ int SecondMapDictionary::search(string input,int offset,int count, unsigned mapC
 		}else
 		{
 			vector<string> words = it->second;
-			if(count == 3 || count == 4)
+			if(count == 9 || count == 12)
 			{
 				vector<string>::iterator result = find(words.begin(),words.end(),input.substr(offset, count*3));
 				if(result == words.end())
 					return -1;
 				else
-					return count * 3;
+					return count;
 			}else //if  it more than five,check every words to find out whether it is in the input string
 			{
 				string word;

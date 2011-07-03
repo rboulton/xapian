@@ -14,7 +14,7 @@ public:
 	~PrepareDictionaries();
 
 	void loadDictionares();
-	void loadDictionary();
+	void loadHashDictionares();
 	void createDoubleHashDictionries();
 	void searchHash(string input, vector<string> &output);
 	void searchDoubleHash(string input, vector<string> &output);
@@ -25,6 +25,5 @@ public:
 	void splitString(string input, vector<string> &list_string);
 
 public:
-
 	void createHashDictionaries();
 };
