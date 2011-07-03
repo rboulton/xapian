@@ -100,7 +100,7 @@ void HashDictionary::addSubDictionary(unsigned hashChar, int beginIndex, int end
 
 dictionary* HashDictionary::createSubDictionary(string *ascWords, int beginIndex, int endIndex)
 {
-	if((endIndex - beginIndex) < 512)
+	if((endIndex - beginIndex) < 16)
 	{
 		dictionary *dic = new BinaryDictionary(ascWords, beginIndex, endIndex,count);
 		return dic;

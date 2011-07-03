@@ -13,13 +13,11 @@ void testDoubleDictionary();
 
 int _tmain(int argc, _TCHAR* argv[])
 {
-	
-	test1();
-	
+	test1();	
 }
 
 
-void test1()
+void test1() // test the algorithm which is used in Paoding 
 {
 	
 	ifstream infile("chinese6.txt"); // the chinese1.txt is the filename to be operated
