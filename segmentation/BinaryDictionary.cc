@@ -28,15 +28,6 @@ BinaryDictionary::BinaryDictionary(std::string *ascWords, int beginIndex, int en
 
 }
 
-BinaryDictionary::BinaryDictionary(charArray *ascWords, int beginIndex, int endIndex, int totalCount)
-{
-	this->ascInputs = ascWords;
-	this->beginIndex = beginIndex;
-	this->endIndex = endIndex;
-	this->count = endIndex - beginIndex;
-	this->hit = false;
-
-}
 
 string BinaryDictionary::getWord(int index)
 {

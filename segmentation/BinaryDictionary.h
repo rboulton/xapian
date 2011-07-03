@@ -1,22 +1,20 @@
 #pragma once
 #include <string>
 #include "dictionary.h"
-#include "util.h"
+
 using namespace std;
 
 class BinaryDictionary :
 	public dictionary
 {
 public:
-	BinaryDictionary(string *ascWords, int count);
+	BinaryDictionary(string *ascWords, int totalCount);
 	BinaryDictionary(string *ascWords, int beginIndex, int endIndex, int totalCount);
-	BinaryDictionary(charArray *ascWords, int beginIndex, int endIndex, int totalCount);
 //private:
 	
 public:
 	virtual ~BinaryDictionary();
 	string *ascWords;
-	charArray *ascInputs;
 	int beginIndex;
 	int endIndex;
 	int count;

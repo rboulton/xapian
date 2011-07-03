@@ -4,7 +4,7 @@
 #include "DoubleHashDictionary.h"
 #include "dictionary.h"
 #include "HashDictionary.h"
-#include "util.h"
+
 
 class PrepareDictionaries
 {
@@ -19,7 +19,6 @@ public:
 	void searchHash(string input, vector<string> &output);
 	void searchDoubleHash(string input, vector<string> &output);
 	string *ascWords;
-	charArray *ascInputs;
 	DoubleHashDictionary *dic;
 	HashDictionary *dict;
 	int totalNumber;
