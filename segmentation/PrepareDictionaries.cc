@@ -9,15 +9,11 @@
 #include <fstream>
 #include <stdio.h>
 #include <stdlib.h>
-#include "unicode.h"
 #include "HashDictionary.h"
 #include "PrepareDictionaries.h"
 #include "HashDictionary.h"
 #include "DoubleHashDictionary.h"
 using namespace std;
-using namespace Xapian;
-using namespace Unicode;
-using namespace Internal;
 
 PrepareDictionaries::PrepareDictionaries()
 {
