@@ -8,7 +8,11 @@ using namespace std;
 
 void test1();
 
+#ifndef __WIN32__
+int main(int argc, char* argv[])
+#else
 int _tmain(int argc, _TCHAR* argv[])
+#endif
 {
 	test1();
 }
