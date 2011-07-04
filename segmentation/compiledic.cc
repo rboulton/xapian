@@ -1,4 +1,4 @@
-#include "StdAfx.h"
+#include "stdafx.h"
 #include "compiledic.h"
 #include "iostream"
 #include "fstream"
