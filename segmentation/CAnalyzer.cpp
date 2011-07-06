@@ -30,7 +30,7 @@ int _tmain(int argc, _TCHAR* argv[])
 void test1()
 {
 	
-	ifstream infile("test1.txt"); // the chinese1.txt is the filename to be operated
+	ifstream infile("chinese9.txt"); // the chinese1.txt is the filename to be operated
 	if(!infile){
 		cerr<< "unable to open file";
 		return ;
@@ -75,7 +75,7 @@ void test1()
 void testDoubleDictionary()
 {
 
-	ifstream infile("test1.txt"); // the chinese1.txt is the filename to be operated
+	ifstream infile("chinese9.txt"); // the chinese1.txt is the filename to be operated
 	if(!infile){
 		cerr<< "unable to open file";
 		return ;
