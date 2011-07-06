@@ -1,13 +1,14 @@
-#include "StdAfx.h"
-#include "compiledic.h"
-#include "iostream"
-#include "fstream"
-#include "string"
-#include "vector"
+#include "stdafx.h"
+#include <iostream>
+#include <fstream>
+#include <string>
+#include <vector>
 #include <algorithm>
 #include <time.h>
+#include <map>
+#include "compiledic.h"
 #include "unicode.h"
-#include "map"
+
 
 using namespace std;
 using namespace Xapian;

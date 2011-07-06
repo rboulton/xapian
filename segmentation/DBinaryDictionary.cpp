@@ -1,5 +1,5 @@
 #define NOMINMAX
-#include "StdAfx.h"
+#include "stdafx.h"
 #include <algorithm>
 #include "DBinaryDictionary.h"
 
@@ -87,7 +87,7 @@ int DBinaryDictionary::search(string str) //check whether str in the array,using
 	int end = endIndex;
 	int result;
 	int middle;
-	while(begin < end)
+	while(begin <= end)
 	{
 		middle = (begin + end) / 2;
 		result = compare(str, ascWords[middle]);

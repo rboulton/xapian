@@ -1,5 +1,5 @@
 #define NOMINMAX
-#include "StdAfx.h"
+#include "stdafx.h"
 #include <algorithm>
 #include "BinaryDictionary.h"
 
