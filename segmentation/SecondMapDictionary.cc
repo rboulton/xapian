@@ -104,7 +104,7 @@ int SecondMapDictionary::size()
 int SecondMapDictionary::search(string input,int offset,int count, unsigned mapChar)
 {
 	string strTemp = input.substr(offset, count);	
-	strTemp += '\n';
+
 	unsigned index = mapChar;
 	if(count == 6)
 	{
@@ -128,38 +128,7 @@ int SecondMapDictionary::search(string input,int offset,int count, unsigned mapC
 		{
 			DBinaryDictionary *dic = it->second;
 			return dic->search(input, offset, count, mapChar);
-			/*
-			vector<string> words = it->second;
-			if(count == 9 || count == 12)
-			{
-				vector<string>::iterator result = find(words.begin(),words.end(),strTemp);
-				if(result == words.end())
-					return -1;
-				else
-					return count;
-			}else //if  it more than five,check every words to find out whether it is in the input string
-			{
-				string word;
-				int maxlength = -1;
-				int size = 12;
-				for(vector<string>::iterator iter = words.begin(); iter != words.end();iter++)
-				{
-					if(size > word.size())
-						break;
-
-					word = *iter;
-					strTemp = input.substr(offset, word.size() -1);
-					size = word.size();
-					if(strTemp.compare(word) == 0)
-					{					
-						maxlength = max(maxlength, size);
-					}					
-
-				}
-
-				return maxlength;
-			}
-			*/
+			
 		}
 	}
 	

@@ -36,7 +36,7 @@ FirstLevelDictionary::FirstLevelDictionary(string* ascWords, int beginIndex, int
 	for(;index<endIndex;index++)
 	{
 		size = ascWords[index].size();  
-		if(size != 7)  //the length of two character chinese word is 6 because the general chinese character in UTF-8 contains 3 byte;
+		if(size != 6)  //the length of two character chinese word is 6 because the general chinese character in UTF-8 contains 3 byte;
 		{
 			
 			break;
@@ -54,7 +54,7 @@ FirstLevelDictionary::FirstLevelDictionary(string* ascWords, int beginIndex, int
 	{
 		//str = ascWords[index];
 		size =  ascWords[index].size();  
-		if(size != 10)  //the length of two character chinese word is 9 
+		if(size != 9)  //the length of three character chinese word is 9 
 		{			
 			break;
 		}
@@ -68,9 +68,9 @@ FirstLevelDictionary::FirstLevelDictionary(string* ascWords, int beginIndex, int
 	begin = index;
 	for(;index<endIndex;index++)
 	{
-	//	str = ascWords[index];
+	
 		size = ascWords[index].size() ;  
-		if(size != 13)  //the length of two character chinese word is 12
+		if(size != 12)  //the length of four character chinese word is 12
 		{			
 			break;
 		}
@@ -85,7 +85,7 @@ FirstLevelDictionary::FirstLevelDictionary(string* ascWords, int beginIndex, int
 	begin = index;
 	for(;index<endIndex;index++)
 	{
-		size = ascWords[index].size() - 1; 
+		size = ascWords[index].size(); 
 		maxlength = max(maxlength, size);			
 	}
 	multWordDic = createSubDictionary(ascWords, begin, index,15);

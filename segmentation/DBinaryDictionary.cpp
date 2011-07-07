@@ -46,7 +46,6 @@ int DBinaryDictionary::search(string input,int offset,int count, unsigned mapCha
 	
 	hit = false;
 	string temp = input.substr(offset, count);
-	temp += '\n';
 	int searchResult = search(temp);
 	int index = searchResult;
 	int resultlength = -1;

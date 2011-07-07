@@ -13,16 +13,17 @@ void testDoubleDictionary();
 
 int _tmain(int argc, _TCHAR* argv[])
 {
-	
-	clock_t start = clock();
+	/*
+	clock_t begin = clock();
 	testDoubleDictionary();
-	clock_t finish = clock();
-	int time = finish - start;
-	cout<<time<<endl;
-	 start = clock();
+	clock_t end = clock();
+	int interval = end - begin;
+	cout<<interval<<endl;
+	*/
+	 clock_t start = clock();
 	test1();
-	 finish = clock();
-	time = finish - start;
+	 clock_t finish = clock();
+	int time = finish - start;
 	cout<<time<<endl;
 }
 
@@ -42,13 +43,13 @@ void test1()
 		input += str;
 	}
 
+
 	PrepareDictionaries * pre = new PrepareDictionaries(); 
 	pre->loadHashDictionares();
 	pre->createHashDictionaries();
 	vector<string> output;
 	pre->searchHash(input, output);
 	
-
 	vector<string>::iterator iter;
 	string strOutput;
 	for(iter = output.begin(); iter != output.end(); iter++)
@@ -93,6 +94,7 @@ void testDoubleDictionary()
 	vector<string> output;
 	pre->searchDoubleHash(input,output);
 
+	
 	vector<string>::iterator iter;
 	string strOutput;
 	for(iter = output.begin(); iter != output.end(); iter++)
@@ -110,4 +112,5 @@ void testDoubleDictionary()
 
 	fout<<strOutput;
 	fout.close();
+	
 }

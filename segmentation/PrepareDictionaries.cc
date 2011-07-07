@@ -1,10 +1,9 @@
-#include "stdafx.h"
+#include "StdAfx.h"
 #include <iostream>
 #include <fstream>
 #include <string>
 #include <vector>
 #include <algorithm>
-#include <time.h>
 #include <map>
 #include <fstream>
 #include <stdio.h>
@@ -47,7 +46,7 @@ void PrepareDictionaries::loadDictionares()
 	
 	while(fgets(aa, 100, fp) != NULL)
 	{
-		ascWords[totalNumber++] = aa;
+		ascWords[totalNumber++] = string(aa, strlen(aa) - 1);
 	}	
 	dic = new DoubleHashDictionary(ascWords, totalNumber);
 		
@@ -72,7 +71,7 @@ void PrepareDictionaries::loadHashDictionares()
 	
 	while(fgets(aa, 100, fp) != NULL)
 	{
-		ascWords[totalNumber++] = aa;
+		ascWords[totalNumber++] = string(aa, strlen(aa) - 1);
 	}	
 
 	dict = new HashDictionary(ascWords, totalNumber);	
@@ -99,7 +98,7 @@ void PrepareDictionaries::getFamilyNameDictionary()
 	
 	while(fgets(aa, 100, fp) != NULL)
 	{
-		familyNames[iFamily++] = aa;
+		familyNames[iFamily++] = string(aa, strlen(aa) - 1);
 	}	
 
 	familyNameDic = new HashDictionary(familyNames, iFamily);
@@ -121,7 +120,7 @@ void PrepareDictionaries::getTitleDictionary()
 	
 	while(fgets(aa, 100, fp) != NULL)
 	{
-		titleWords[index++] = aa;
+		titleWords[index++] = string(aa, strlen(aa) - 1);
 	}	
 
 	titleDic = new HashDictionary(titleWords, index);
@@ -230,13 +229,31 @@ void PrepareDictionaries::collectNames(string input, int beginIndex, int endInde
 					}
 					else
 					{
-						//if there is not a title found, just add a two words and a three words name in output
-						output.push_back(input.substr(index, result + 3));
-						if((endIndex - index) >= result +6)
+						//if there is not a title found			
+						int left = endIndex - index - result; 
+						if(left > 6)
 						{
+							output.push_back(input.substr(index, result + 3));
 							output.push_back(input.substr(index, result + 6));
 						}
-						index += result;
+						if(left ==  0)
+						{
+							output.push_back(input.substr(index, result + 6));
+							return;
+						}else if(left == 3)
+						{
+							output.push_back(input.substr(index, result + 3));
+							return;
+						}
+						else if(left == 6)
+						{
+							output.push_back(input.substr(index, result + 3));
+							output.push_back(input.substr(index, result + 6));
+							output.push_back(input.substr(index + result, 6));
+							return;
+						}else{
+							index += result;
+						}
 					}
 
 				}
@@ -245,7 +262,10 @@ void PrepareDictionaries::collectNames(string input, int beginIndex, int endInde
 				
 		}
 	}
-	output.push_back(input.substr(beginIndex, index - beginIndex));
+	if(hit == false)
+	{
+		output.push_back(input.substr(beginIndex, index - beginIndex));
+	}
 	
 }
 

@@ -153,7 +153,7 @@ int HashDictionary::search(string input,int offset,int count, unsigned mapChar)
 		int maxlength = -1;
 		dictionary *subdic = it->second;
 		string str = subdic->getWord(0);
-		if(str.size() == mapIndex * 3 + 1)
+		if(str.size() == mapIndex * 3 )
 		{
 			hit = true;
 			maxlength = mapIndex * 3;

@@ -4,7 +4,6 @@
 #include <string>
 #include <vector>
 #include <algorithm>
-#include <time.h>
 #include <map>
 #include "compiledic.h"
 #include "unicode.h"

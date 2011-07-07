@@ -47,7 +47,6 @@ int BinaryDictionary::search(string input,int offset,int count, unsigned mapChar
 	
 	hit = false;
 	string temp = input.substr(offset, count * 3);
-	temp +='\n';
 	int searchResult = search(temp);
 	int index = searchResult;
 	int resultlength = -1;
@@ -68,7 +67,7 @@ int BinaryDictionary::search(string input,int offset,int count, unsigned mapChar
 			break;
 		maxLength = length;
 		string temp = input.substr(offset, length);
-		temp += '\n';
+
 		//if(input.compare(offset,length, ascWords[index]) == 0)
 		if(temp.compare(ascWords[index]) == 0)
 		{
