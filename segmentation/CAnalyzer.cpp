@@ -11,7 +11,11 @@ using namespace std;
 void test1();
 void testDoubleDictionary();
 
+#ifndef __WIN32__
+int main(int argc, char* argv[])
+#else
 int _tmain(int argc, _TCHAR* argv[])
+#endif
 {
 	/*
 	clock_t begin = clock();
@@ -112,5 +116,4 @@ void testDoubleDictionary()
 
 	fout<<strOutput;
 	fout.close();
-	
 }

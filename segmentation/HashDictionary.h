@@ -5,7 +5,6 @@
 #include <vector>
 #include "dictionary.h"
 using namespace std;
-using namespace stdext;
 
 
 class HashDictionary :
