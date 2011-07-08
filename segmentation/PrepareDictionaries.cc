@@ -1,13 +1,14 @@
 #include "stdafx.h"
 #include <iostream>
 #include <fstream>
-#include <string>
+#include <string.h>
 #include <vector>
 #include <algorithm>
 #include <map>
 #include <fstream>
 #include <stdio.h>
 #include <stdlib.h>
+#include <cstring>
 #include "HashDictionary.h"
 #include "PrepareDictionaries.h"
 #include "HashDictionary.h"
