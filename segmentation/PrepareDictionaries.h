@@ -36,5 +36,5 @@ public:
 	void getFamilyNameDictionary();
 	void getTitleDictionary();
 	multimap<unsigned, Name> collectorNames;
-	void collectNames(string input, int beginIndex, int endIndex, vector<string> &output);
+	void collectNames(string input, int beginIndex, int endIndex, vector<string> &output, int end);
 };

@@ -13,7 +13,12 @@
 #include "PrepareDictionaries.h"
 #include "HashDictionary.h"
 #include "DoubleHashDictionary.h"
+#include "unicode.h"
+
+
+
 using namespace std;
+using namespace Xapian;
 
 PrepareDictionaries::PrepareDictionaries()
 {
@@ -133,47 +138,97 @@ void PrepareDictionaries::searchHash(string input, vector<string> &output)
 {
 	
 	int offset = 0, index = 0;
-	unsigned inputLength = input.size();
+	size_t inputLength = input.size();
 
 	bool hit = false;
 	
 
 	int beginIndex = 0;
-
+	int end = 0;
+	int begin = 0;
+	unsigned temp = 0;
+	size_t leftLength;	
+	Utf8Iterator it(input);
+	
+	
 	while(offset < inputLength)  //characters before offset is already segmented
 	{
-		int result = dict->search(input,offset,1,0);
-		if(result == -1)
-		{
-			
-			if(hit == true)
-			{
-				hit = false;
-				beginIndex = offset;
-			}		
-			
-			offset=offset+3;
-		}
-		else
-		{
-			
-			if(hit == false)
-			{
-				hit = true;				
-				collectNames(input, beginIndex, offset, output);				
-			}
 
-			output.push_back(input.substr(offset,result));
-			offset += result;
+		//looking for a begin for a Chinese substring
+		while(it != Utf8Iterator()) 
+		{
+			temp = *it;
+			
+			if( temp >= 19968 && temp <= 40895) //0x4E00 = 19968 Ox9FBF = 40895
+			{
+				begin = inputLength - it.left();		
+				break;
+			}
+			++it;
+		}	
+		
+		output.push_back(input.substr(offset, begin - offset));
+	
+		//looking for a end for a Chinese substring
+		while(it != Utf8Iterator()) 
+		{
+ 			temp = *it;
+			if(temp < 19968 || temp > 40895)
+			{
+				end = inputLength - it.left();		
+				break;
+			}
+			++it;
+		}
+
+		if(it == Utf8Iterator())
+			end = inputLength;
+
+
+		while(begin < end)
+		{
+			int result = dict->search(input,begin,1,end);
+			if(result == -1)
+			{
+				
+				if(hit == true)
+				{
+					hit = false;
+					beginIndex = begin;
+				}		
+				
+				begin=begin+3;
+			}
+			else
+			{
+				
+				if(hit == false)
+				{
+					hit = true;				
+					collectNames(input, beginIndex, begin, output,end);				
+				}
+
+ 				output.push_back(input.substr(begin,result));
+			
+				begin += result;
+				
+			}
+		}
+		if(hit == false)
+		{
+			hit = true;
+			output.push_back(input.substr(beginIndex, end - beginIndex));
 			
 		}
+
+		offset = end;
 	}
 	
 	
 
 }
 
-void PrepareDictionaries::collectNames(string input, int beginIndex, int endIndex, vector<string> &output)
+void PrepareDictionaries::collectNames(string input, int beginIndex, int endIndex, vector<string> &output, int end)
 {
 	bool hit = false;
 	int index = beginIndex;
@@ -195,17 +250,21 @@ void PrepareDictionaries::collectNames(string input, int beginIndex, int endInde
 			{
 				hit = true;
 				output.push_back(input.substr(beginIndex, index - beginIndex));
+				
 			}
 
 			if(result == 6) 
+			{
 				output.push_back(input.substr(index, result));
+				
+			}
 
 			//check whether it followed by a title
 			int titleResult = titleDic->search(input, index + result, 1, 0);
 			if(titleResult > 0) //if a family name followed by a title , it can be recognized be a name
 			{
-				output.push_back(input.substr(index, 3 + titleResult));
-				index += 3 + titleResult;
+				output.push_back(input.substr(index, result + titleResult));				
+				index += result + titleResult;
 			}
 			else
 			{		
@@ -213,16 +272,18 @@ void PrepareDictionaries::collectNames(string input, int beginIndex, int endInde
 				titleResult = titleDic->search(input, index + result + 3, 1, 0);
 				if(titleResult > 0)
 				{
-					output.push_back(input.substr(index, 6 + titleResult));
-					index += 6 + titleResult;
+					output.push_back(input.substr(index, result + 3 ));
+					output.push_back(input.substr(index, result + 3 + titleResult));
+					index += result + 3 + titleResult;
 				}else
 				{
 					//check whether there are two characters between a family name and a title.
-					titleResult = titleDic->search(input, index + + result + 6, 1, 0);
+					titleResult = titleDic->search(input, index +  result + 6, 1, 0);
 					if(titleResult > 0)
 					{
-						output.push_back(input.substr(index, 9 + titleResult));
-						index += 9 + titleResult;
+						output.push_back(input.substr(index,  result + 6 + titleResult));
+						
+						index +=  result + 6 + titleResult;
 					}
 					else
 					{
@@ -235,7 +296,9 @@ void PrepareDictionaries::collectNames(string input, int beginIndex, int endInde
 						}
 						if(left ==  0)
 						{
-							output.push_back(input.substr(index, result + 6));
+							int totalLeft = end - index - result;
+							if(totalLeft >= 6)
+								output.push_back(input.substr(index, result + 6));
 							return;
 						}else if(left == 3)
 						{
