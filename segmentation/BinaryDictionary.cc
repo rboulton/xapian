@@ -109,6 +109,36 @@ int BinaryDictionary::search(string str) //check whether str in the array,using 
 	return end;
 }
 
+
+bool BinaryDictionary::search(string &input, int offset)
+{
+	string str = input.substr(offset, 3);
+	int begin = beginIndex;
+	int end = endIndex;
+	int result;
+	int middle;
+	while(begin <= end)
+	{
+		middle = (begin + end) / 2;
+		string temp = ascWords[middle];
+		result = compare(str, ascWords[middle]);
+		if(result == 0)
+		{
+			hit = true;
+			return true;
+		}
+		else if(result > 0)
+		{
+			begin =middle + 1;
+		}else
+		{
+			end = middle - 1;
+		}
+		
+	}
+	return false;	
+}
+
 int BinaryDictionary::compare(std::string str1, std::string str2)
 {
 	return str1.compare(str2);

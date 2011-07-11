@@ -5,6 +5,7 @@
 #include "DoubleHashDictionary.h"
 #include "dictionary.h"
 #include "HashDictionary.h"
+#include "BinaryDictionary.h"
 #include "util.h"
 
 using namespace std;
@@ -28,6 +29,8 @@ public:
 	HashDictionary *dict;
 	HashDictionary *familyNameDic;
 	HashDictionary *titleDic;
+	BinaryDictionary *numberDic;
+
 	bool hitFamily;
 	int familyIndex;
 	int totalNumber;
@@ -35,6 +38,9 @@ public:
 	void createHashDictionaries();
 	void getFamilyNameDictionary();
 	void getTitleDictionary();
+	void getNumberDictionary();
 	multimap<unsigned, Name> collectorNames;
-	void collectNames(string input, int beginIndex, int endIndex, vector<string> &output, int end);
+	void collectNames(string &input, int beginIndex, int endIndex, vector<string> &output, int end);
+	void collectChineseNumbers(string &input, int beginIndex, int endIndex, vector<string> &output);
+	void collectLatinNumbers(string input, int beginIndex, int endIndex, vector<string> &output);
 };

@@ -25,5 +25,6 @@ public:
 	
 	virtual string getWord(int index);
 	int search(string str);
+	bool search(string &input, int offset);
 	int compare(string str1,string str2);
 };

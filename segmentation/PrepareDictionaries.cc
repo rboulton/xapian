@@ -13,6 +13,7 @@
 #include "PrepareDictionaries.h"
 #include "HashDictionary.h"
 #include "DoubleHashDictionary.h"
+#include "BinaryDictionary.h"
 #include "unicode.h"
 
 
@@ -80,6 +81,7 @@ void PrepareDictionaries::loadHashDictionares()
 	
 	getFamilyNameDictionary();
 	getTitleDictionary();
+	getNumberDictionary();
 		
 }
 
@@ -127,6 +129,26 @@ void PrepareDictionaries::getTitleDictionary()
 
 	titleDic = new HashDictionary(titleWords, index);
 
+}
+void PrepareDictionaries::getNumberDictionary()
+{
+	string str;		
+	string *numbers = new string[30];
+	FILE *fp;
+	if((fp=fopen("number.dic","r"))==NULL)
+	{
+		cout<<"file not open"<<endl;
+		exit(1);
+	}
+	int index = 0;
+	char aa[10];
+	
+	while(fgets(aa, 10, fp) != NULL)
+	{
+		numbers[index++] = string(aa, strlen(aa) - 1);
+	}	
+
+	numberDic = new BinaryDictionary(numbers, index);
 }
 
 void PrepareDictionaries:: searchDoubleHash(string input, vector<string> &output)
@@ -205,7 +227,8 @@ void PrepareDictionaries::searchHash(string input, vector<string> &output)
 				if(hit == false)
 				{
 					hit = true;				
-					collectNames(input, beginIndex, begin, output,end);				
+					//collectNames(input, beginIndex, begin, output,end);	
+					collectChineseNumbers(input, beginIndex, begin, output);
 				}
 
  				output.push_back(input.substr(begin,result));
@@ -223,12 +246,12 @@ void PrepareDictionaries::searchHash(string input, vector<string> &output)
 
 		offset = end;
 	}
-	
-	
 
 }
 
-void PrepareDictionaries::collectNames(string input, int beginIndex, int endIndex, vector<string> &output, int end)
+
+
+void PrepareDictionaries::collectNames(string &input, int beginIndex, int endIndex, vector<string> &output, int end)
 {
 	bool hit = false;
 	int index = beginIndex;
@@ -328,6 +351,77 @@ void PrepareDictionaries::collectNames(string input, int beginIndex, int endInde
 	}
 	
 }
+
+void PrepareDictionaries::collectChineseNumbers(string &input, int beginIndex, int endIndex, vector<string> &output)
+{
+	bool hit = false;
+	
+	int index = beginIndex;
+
+	bool result;
+	int begin = 0;
+	int falseBegin = beginIndex;
+	int temp;
+	while(index < endIndex)
+	{
+		result = numberDic->search(input, index);
+		if(result)
+		{
+			if(hit == false)
+			{
+				hit = true;
+				begin = index;
+				if(begin > falseBegin)
+				{
+					output.push_back(input.substr(falseBegin, begin - falseBegin));
+					falseBegin= index;
+				}
+			}
+			index += 3;
+		}else
+		{
+			if(hit == true)
+			{
+				Utf8Iterator it(input.substr(index, 3));
+				temp = *it;
+				if (temp == 28857) // 28857 is unicode value for the Chinese character 'µã', which in English is the dot '.' 
+				{
+					result = numberDic->search(input, index + 3);
+					if(result == true)
+						index += 6;
+					else
+					{
+						output.push_back(input.substr(beginIndex, index));
+						hit = false;
+						index += 6;
+					}
+				}
+				else
+				{
+					output.push_back(input.substr(beginIndex, index));
+					hit = false;
+					index += 3;
+				}
+			}
+			else
+				index += 3;
+		}
+
+	}
+
+	if(hit == true){
+		if((falseBegin - beginIndex) >= 6)
+			output.push_back(input.substr(beginIndex, endIndex - beginIndex));
+	}
+	else
+	{
+		output.push_back(input.substr(falseBegin, endIndex - falseBegin));
+	//	output.push_back("1");
+	}
+
+}
+void PrepareDictionaries::collectLatinNumbers(string input, int beginIndex, int endIndex, vector<string> &output)
+{}
 
 
 
