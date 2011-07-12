@@ -228,7 +228,7 @@ void PrepareDictionaries::searchHash(string input, vector<string> &output)
 				{
 					hit = true;				
 					//collectNames(input, beginIndex, begin, output,end);	
-					collectChineseNumbers(input, beginIndex, begin, output);
+					collectChineseNumbers(input, beginIndex, begin, output, end);
 				}
 
  				output.push_back(input.substr(begin,result));
@@ -352,7 +352,7 @@ void PrepareDictionaries::collectNames(string &input, int beginIndex, int endInd
 	
 }
 
-void PrepareDictionaries::collectChineseNumbers(string &input, int beginIndex, int endIndex, vector<string> &output)
+void PrepareDictionaries::collectChineseNumbers(string &input, int beginIndex, int endIndex, vector<string> &output, int end)
 {
 	bool hit = false;
 	
@@ -361,7 +361,7 @@ void PrepareDictionaries::collectChineseNumbers(string &input, int beginIndex, i
 	bool result;
 	int begin = 0;
 	int falseBegin = beginIndex;
-	int temp;
+	unsigned temp;
 	while(index < endIndex)
 	{
 		result = numberDic->search(input, index);
@@ -391,15 +391,17 @@ void PrepareDictionaries::collectChineseNumbers(string &input, int beginIndex, i
 						index += 6;
 					else
 					{
-						output.push_back(input.substr(beginIndex, index));
+						output.push_back(input.substr(begin, index - begin));
 						hit = false;
+						falseBegin = index;
 						index += 6;
 					}
 				}
 				else
 				{
-					output.push_back(input.substr(beginIndex, index));
+					output.push_back(input.substr(begin, index - begin));
 					hit = false;
+					falseBegin = index;
 					index += 3;
 				}
 			}
@@ -409,14 +411,40 @@ void PrepareDictionaries::collectChineseNumbers(string &input, int beginIndex, i
 
 	}
 
-	if(hit == true){
-		if((falseBegin - beginIndex) >= 6)
-			output.push_back(input.substr(beginIndex, endIndex - beginIndex));
+	bool dot = false;
+	if(hit == true){ // if the string which is not found in dictionary is finished, then search the string followed
+
+		while(hit)
+		{
+			result = numberDic->search(input, index);
+			if(!result)
+			{
+				if(dot)
+					hit = false;
+				else{
+					string str = input.substr(index,3);
+					Utf8Iterator it(str);
+					temp = *it;
+					if(temp != 28857)
+						hit = false;				
+					else 
+						dot = true;
+				}
+			}
+			index += 3;
+		}
+
+		index -= 6;
+		result = numberDic->search(input, index);
+
+		if(result)
+			index += 3;
+
+		output.push_back(input.substr(begin, index - begin));
 	}
 	else
 	{
 		output.push_back(input.substr(falseBegin, endIndex - falseBegin));
-	//	output.push_back("1");
 	}
 
 }

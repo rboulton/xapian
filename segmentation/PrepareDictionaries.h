@@ -41,6 +41,6 @@ public:
 	void getNumberDictionary();
 	multimap<unsigned, Name> collectorNames;
 	void collectNames(string &input, int beginIndex, int endIndex, vector<string> &output, int end);
-	void collectChineseNumbers(string &input, int beginIndex, int endIndex, vector<string> &output);
+	void collectChineseNumbers(string &input, int beginIndex, int endIndex, vector<string> &output, int end);
 	void collectLatinNumbers(string input, int beginIndex, int endIndex, vector<string> &output);
 };
