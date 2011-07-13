@@ -42,5 +42,9 @@ public:
 	multimap<unsigned, Name> collectorNames;
 	void collectNames(string &input, int beginIndex, int endIndex, vector<string> &output, int end);
 	void collectChineseNumbers(string &input, int beginIndex, int endIndex, vector<string> &output, int end);
-	void collectLatinNumbers(string input, int beginIndex, int endIndex, vector<string> &output);
+	void collectLatinWords(string &input, int beginIndex, int endIndex, vector<string> &output);
+	bool isChineseDot(string &input, int offset);
+	bool isLatinCharacter(char in);
+	bool isNumber(char in);
+	bool isPunctuate(char in);
 };

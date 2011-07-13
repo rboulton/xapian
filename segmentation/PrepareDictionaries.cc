@@ -189,8 +189,10 @@ void PrepareDictionaries::searchHash(string input, vector<string> &output)
 			++it;
 		}	
 		
-		output.push_back(input.substr(offset, begin - offset));
-	
+		//output.push_back(input.substr(offset, begin - offset));
+		//deal with none Chinese characters
+		collectLatinWords(input, offset, begin, output);
+
 		//looking for a end for a Chinese substring
 		while(it != Utf8Iterator()) 
 		{
@@ -206,9 +208,10 @@ void PrepareDictionaries::searchHash(string input, vector<string> &output)
 		if(it == Utf8Iterator())
 			end = inputLength;
 
-
+		beginIndex = begin;
 		while(begin < end)
 		{
+			
 			int result = dict->search(input,begin,1,end);
 			if(result == -1)
 			{
@@ -357,15 +360,16 @@ void PrepareDictionaries::collectChineseNumbers(string &input, int beginIndex, i
 	bool hit = false;
 	
 	int index = beginIndex;
-
 	bool result;
-	int begin = 0;
+	int begin = beginIndex;
 	int falseBegin = beginIndex;
 	unsigned temp;
+	bool dot = false; //one Chinese number should only contain only one dot
+	string str;
 	while(index < endIndex)
 	{
-		result = numberDic->search(input, index);
-		if(result)
+		result = numberDic->search(input, index); //check whether the next character is a Chinese-number character
+		if(result) // if it is a Chinese character
 		{
 			if(hit == false)
 			{
@@ -380,17 +384,47 @@ void PrepareDictionaries::collectChineseNumbers(string &input, int beginIndex, i
 			index += 3;
 		}else
 		{
-			if(hit == true)
+			if(dot)
 			{
-				Utf8Iterator it(input.substr(index, 3));
-				temp = *it;
-				if (temp == 28857) // 28857 is unicode value for the Chinese character 'µã', which in English is the dot '.' 
+				hit = false;
+				index += 3;
+			}
+
+			if(hit)
+			{
+				dot = isChineseDot(input, index);
+				if (dot) 
 				{
 					result = numberDic->search(input, index + 3);
 					if(result == true)
 						index += 6;
 					else
 					{
+						
+							if(begin == beginIndex) // if the numbers are in first location, then check the characters before it
+							{
+								while(hit)
+								{
+									begin -= 3;
+									result = numberDic->search(input, begin);
+									if(!result)
+									{
+										if(dot)
+										{
+											hit = false;
+										}
+										else
+										{
+											dot = isChineseDot(input, begin);
+											if(!dot)
+												hit = false;
+
+										}
+
+									}
+								}
+							}
+						
 						output.push_back(input.substr(begin, index - begin));
 						hit = false;
 						falseBegin = index;
@@ -411,8 +445,10 @@ void PrepareDictionaries::collectChineseNumbers(string &input, int beginIndex, i
 
 	}
 
-	bool dot = false;
+
 	if(hit == true){ // if the string which is not found in dictionary is finished, then search the string followed
+					//because some numbers will be in dictionary as other meaning, and it will be segement before collect numbers
+					// so we have to search the followed characters.
 
 		while(hit)
 		{
@@ -422,23 +458,50 @@ void PrepareDictionaries::collectChineseNumbers(string &input, int beginIndex, i
 				if(dot)
 					hit = false;
 				else{
-					string str = input.substr(index,3);
-					Utf8Iterator it(str);
-					temp = *it;
-					if(temp != 28857)
-						hit = false;				
-					else 
-						dot = true;
+					dot = isChineseDot(input, index);
+					if(!dot)
+						hit = false;
+
 				}
 			}
 			index += 3;
 		}
 
+		
 		index -= 6;
 		result = numberDic->search(input, index);
 
 		if(result)
 			index += 3;
+
+
+
+		hit = true;
+		
+		if(begin == beginIndex) // if the numbers are in first location, then check the characters before it
+		{
+			while(hit)
+			{
+				begin -= 3;
+				result = numberDic->search(input, begin);
+				if(!result)
+				{
+					if(dot)
+					{
+						hit = false;
+					}
+					else
+					{
+						dot = isChineseDot(input, begin);
+						if(!dot)
+							hit = false;
+					}
+				}
+			}
+		}
+		
+		begin += 3;
+
 
 		output.push_back(input.substr(begin, index - begin));
 	}
@@ -448,8 +511,123 @@ void PrepareDictionaries::collectChineseNumbers(string &input, int beginIndex, i
 	}
 
 }
-void PrepareDictionaries::collectLatinNumbers(string input, int beginIndex, int endIndex, vector<string> &output)
-{}
+
+bool PrepareDictionaries::isChineseDot(string &input, int offset)
+{
+	string str = input.substr(offset, 3);
+	Utf8Iterator it(str);
+	unsigned temp = *it;
+	if(temp == 28857)
+		return true;
+	else
+		return false;
+}
+
+void PrepareDictionaries::collectLatinWords(string &input, int beginIndex, int endIndex, vector<string> &output)
+{
+	char temp;
+	int index = beginIndex;
+	bool hit = false;
+	int dot = -1;
+	int begin = beginIndex;
+	int falseBegin = beginIndex;
+	while(index < endIndex)
+	{
+		temp = input[index];
+		if(isLatinCharacter(temp))
+		{
+			begin = index;
+			if(!hit)
+				output.push_back(input.substr(falseBegin,index  - falseBegin));
+			hit = true;
+			while(hit)
+			{
+				index++;
+				temp = input[index];
+				if(!isLatinCharacter(temp))
+					hit = false;
+			}
+			output.push_back(input.substr(begin, index  - begin));
+			hit = true;
+		}
+		else if(isNumber(temp))
+		{
+			begin = index;
+			if(!hit)
+				output.push_back(input.substr(falseBegin,index - falseBegin));
+			hit = true;
+			index++;
+			while(hit)
+			{
+				temp = input[index];
+				
+				if(numberDic->search(input, index))
+				{
+					index += 3;
+				}else if(isChineseDot(input, index) && (dot < begin))
+				{
+					dot = index;
+					index += 3;
+
+				}
+				else if(isNumber(temp)||isPunctuate(temp))
+				{
+					index++;
+				}
+				else 
+				{
+					hit = false;
+				}
+
+					
+			}
+
+			if(dot == (index - 3))// this means the last character is Chinese dot
+				index -= 3;
+			
+			output.push_back(input.substr(begin, index - begin));
+			hit = true;
+		}else
+		{
+			if(hit)
+			{
+				hit = false;
+				falseBegin = index;
+			}
+			index++;
+		}
+	}
+	
+	
+}
+
+
+bool PrepareDictionaries::isPunctuate(char in)
+{
+	if(in == '-' || in == '/' || in== ',' || in == '.') // these are the possible character in Numbers
+		return true;
+	else
+		return false;
+}
+bool PrepareDictionaries::isNumber(char in)
+{
+	if(in >= '0' && in <= '9')
+		return true;
+	else
+		return false;
+}
+	
+bool PrepareDictionaries::isLatinCharacter(char in)
+{
+	if((in >= 'a' && in <= 'z')
+		|| (in >= 'A' && in <= 'Z'))
+		return true;
+	else
+		return false;
+}
+
+
+
 
 
 
