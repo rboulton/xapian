@@ -6,6 +6,9 @@
 #include <time.h>
 #include "PrepareDictionaries.h"
 
+
+int invalid = 0;
+int invalidNumber = 0;
 using namespace std;
 
 void test1();
@@ -29,13 +32,14 @@ int _tmain(int argc, _TCHAR* argv[])
 	 clock_t finish = clock();
 	int time = finish - start;
 	cout<<time<<endl;
+
 }
 
 
 void test1()
 {
 	
-	ifstream infile("chinese9.txt"); // the chinese1.txt is the filename to be operated
+	ifstream infile("chinese7.txt"); // the chinese1.txt is the filename to be operated
 	if(!infile){
 		cerr<< "unable to open file";
 		return ;

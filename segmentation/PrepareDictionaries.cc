@@ -16,13 +16,14 @@
 #include "BinaryDictionary.h"
 #include "unicode.h"
 
-
-
+extern int invalid ;
+extern int invalidNumber;
 using namespace std;
 using namespace Xapian;
 
 PrepareDictionaries::PrepareDictionaries()
 {
+	
 }
 
 PrepareDictionaries::~PrepareDictionaries()
@@ -46,6 +47,12 @@ void PrepareDictionaries::loadDictionares()
 	}
 	totalNumber = 0;
 	char aa[100];
+	fgets(aa, 100, fp);
+	
+	string temp = string(aa, strlen(aa) - 1);
+
+	ascWords[totalNumber++] = temp.substr(3);
+	
 	
 	while(fgets(aa, 100, fp) != NULL)
 	{
@@ -158,7 +165,8 @@ void PrepareDictionaries:: searchDoubleHash(string input, vector<string> &output
 
 void PrepareDictionaries::searchHash(string input, vector<string> &output)
 {
-	
+	freWords = new FrequencyWord(input);
+
 	int offset = 0, index = 0;
 	size_t inputLength = input.size();
 
@@ -192,6 +200,8 @@ void PrepareDictionaries::searchHash(string input, vector<string> &output)
 		//output.push_back(input.substr(offset, begin - offset));
 		//deal with none Chinese characters
 		collectLatinWords(input, offset, begin, output);
+	
+	
 
 		//looking for a end for a Chinese substring
 		while(it != Utf8Iterator()) 
@@ -232,6 +242,7 @@ void PrepareDictionaries::searchHash(string input, vector<string> &output)
 					hit = true;				
 					//collectNames(input, beginIndex, begin, output,end);	
 					collectChineseNumbers(input, beginIndex, begin, output, end);
+					collectNoFoundDictionary(input, beginIndex, begin);
 				}
 
  				output.push_back(input.substr(begin,result));
@@ -250,8 +261,16 @@ void PrepareDictionaries::searchHash(string input, vector<string> &output)
 		offset = end;
 	}
 
+	freWords->collect();
 }
 
+
+void PrepareDictionaries::collectNoFoundDictionary(string &input, int beginIndex, int endIndex)
+{
+	if(endIndex - beginIndex >= 6)
+		freWords->addBlock(beginIndex,endIndex);
+
+}
 
 
 void PrepareDictionaries::collectNames(string &input, int beginIndex, int endIndex, vector<string> &output, int end)

@@ -7,6 +7,8 @@
 #include "HashDictionary.h"
 #include "BinaryDictionary.h"
 #include "util.h"
+#include "FrequencyWord.h"
+
 
 using namespace std;
 
@@ -30,6 +32,7 @@ public:
 	HashDictionary *familyNameDic;
 	HashDictionary *titleDic;
 	BinaryDictionary *numberDic;
+	FrequencyWord *freWords;
 
 	bool hitFamily;
 	int familyIndex;
@@ -47,4 +50,6 @@ public:
 	bool isLatinCharacter(char in);
 	bool isNumber(char in);
 	bool isPunctuate(char in);
+	void collectNoFoundDictionary(string &input, int beginIndex, int endIndex);
+
 };
