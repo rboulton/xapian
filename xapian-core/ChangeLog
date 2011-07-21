@@ -1,3 +1,24 @@
+Sun May 29 07:04:42 GMT 2011  Olly Betts <olly@survex.com>
+
+	* docs/postingsource.rst: Add PostingSource example.  (ticket#503)
+
+Sun May 29 05:19:40 GMT 2011  Olly Betts <olly@survex.com>
+
+	* include/xapian/database.h: Add @exception InvalidArgumentError for
+	  Database::get_document() (ticket#542).
+
+Fri May 27 05:36:28 GMT 2011  Olly Betts <olly@survex.com>
+
+	* NEWS: Update from ChangeLog.
+
+Thu May 26 02:44:07 GMT 2011  Olly Betts <olly@survex.com>
+
+	* include/xapian/queryparser.h: FIXME:1.1.3 -> FIXME:1.3.
+
+Wed May 25 14:58:37 GMT 2011  Olly Betts <olly@survex.com>
+
+	* docs/queryparser.html: Document the precedence order of operators.
+
 Fri May 20 04:13:54 GMT 2011  Olly Betts <olly@survex.com>
 
 	* examples/simpleindex.cc: Add short description to usage message.
