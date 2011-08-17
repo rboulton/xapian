@@ -1,3 +1,99 @@
+Mon Jun 07 19:27:24 GMT 2010  Richard Boulton <richard@tartarus.org>
+
+	* tests/api_geospatial.cc: Fix latlongcoords1 to work with the new
+	  LatLongCoords semantics.
+
+Mon Jun 07 19:21:57 GMT 2010  Richard Boulton <richard@tartarus.org>
+
+	* geospatial/latlongcoord.cc,include/xapian/geospatial.h,
+	  tests/api_geospatial.cc: Change LatLongCoords to retain the order
+	  of coordinates, to allow future metrics to consider the
+	  coordinates as the boundary of a shape, rather than just a
+	  distinct set of points.  Use a vector instead of a set to hold
+	  the coordinates.  Remove the "erase" method, since this is less
+	  easy to define for a vector (and I was never particularly happy
+	  about the floating point comparisons involved in checking for
+	  equality when erasing a member from the set, anyway).  Rename the
+	  "insert" method to "append", since the coordinates are now
+	  ordered.
+
+Mon Jun 07 14:58:34 GMT 2010  Richard Boulton <richard@tartarus.org>
+
+	* include/xapian/geospatial.h: Add an implementation for the
+	  constructor for an uninitialised LatLongCoordsIterator.  Make
+	  LatLongCoordsIterator::operator * return a reference, instead of
+	  forcing a copy.
+	* tests/api_geospatial.cc: Add test coverage for the
+	  LatLongCoordsIterator methods.
+
+Mon Jun 07 14:33:39 GMT 2010  Richard Boulton <richard@tartarus.org>
+
+	* geospatial/latlong_metrics.cc,include/xapian/geospatial.h,
+	  tests/api_geospatial.cc: Don't expose an STL set iterator for
+	  iterating through the contents of LatLongCoords: instead, define
+	  a LatLongCoordsIterator, which wraps this.  Avoids making the API
+	  depend on the STL implementation, and should make it easier to
+	  access the contents of the set from SWIG bindings.  Also, add
+	  some missing documentation comments to LatLongCoords methods.
+
+Mon Jun 07 12:22:58 GMT 2010  Richard Boulton <richard@tartarus.org>
+
+	* geospatial/latlongcoord.cc: Don't do a special-case conversion of
+	  a longitude of -0.0 to 0.0.  There doesn't seem to be any benefit
+	  from doing this, and not doing it doesn't cause any tests to
+	  fail.
+
+Mon Jun 07 10:41:46 GMT 2010  Richard Boulton <richard@tartarus.org>
+
+	* geospatial/latlong_posting_source.cc: Convert several instances
+	  of string building with "+" to use "+=".
+
+Mon Jun 07 10:33:07 GMT 2010  Richard Boulton <richard@tartarus.org>
+
+	* include/xapian/geospatial.h: Finish incomplete documentation
+	  comment.
+
+Sun Jun 06 15:40:07 GMT 2010  Richard Boulton <richard@tartarus.org>
+
+	* geospatial/latlong_posting_source.cc: Change the name() method to
+	  just return a string literal, instead of wrapping one in string()
+	  to be returned, for consistency with all the other name()
+	  methods.
+
+Sun Jun 06 15:36:45 GMT 2010  Richard Boulton <richard@tartarus.org>
+
+	* geospatial/latlong_metrics.cc: Changed the clamping to 1.0 for
+	  {{{GreatCircleMetric}}} to be before the sqrt().  Also wrapped it
+	  in "rare()".
+
+Sun Jun 06 15:31:21 GMT 2010  Richard Boulton <richard@tartarus.org>
+
+	* geospatial/latlong_distance_keymaker.cc,
+	  geospatial/latlong_metrics.cc,geospatial/latlongcoord.cc: Change
+	  character used to introduce doxygen comments from \ to @.
+
+Sun Jun 06 15:21:15 GMT 2010  Richard Boulton <richard@tartarus.org>
+
+	* include/xapian/geospatial.h: Make the constructor of
+	  GreatCircleMetric which takes a radius explicit, and fix and
+	  expand the documentation comment.
+
+Sun Jun 06 15:14:32 GMT 2010  Richard Boulton <richard@tartarus.org>
+
+	* docs/geospatial.rst,geospatial/latlong_metrics.cc,
+	  include/xapian/geospatial.h: Correct capitalisation of "earth" to
+	  "Earth".
+
+Sun Jun 06 15:04:42 GMT 2010  Richard Boulton <richard@tartarus.org>
+
+	* Makefile.am,api/omqueryinternal.cc,api/postingsource.cc,
+	  api/registry.cc,common/output.h,common/registryinternal.h,
+	  docs/geospatial.rst,geospatial/,include/Makefile.mk,include/xapian.h,
+	  include/xapian/geospatial.h,include/xapian/postingsource.h,
+	  include/xapian/registry.h,tests/Makefile.am,tests/api_geospatial.cc:
+	  Apply patch geospatial_clean3.patch from ticket #481: adds basic
+	  geospatial search support.
+
 Tue Aug 16 04:56:20 GMT 2011  Olly Betts <olly@survex.com>
 
 	* bin/xapian-check.cc: Throw Xapian::FeatureUnavailableError if
