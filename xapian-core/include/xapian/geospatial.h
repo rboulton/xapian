@@ -2,7 +2,7 @@
  * @brief Geospatial search support routines.
  */
 /* Copyright 2008,2009 Lemur Consulting Ltd
- * Copyright 2010 Richard Boulton
+ * Copyright 2010,2011 Richard Boulton
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License as
@@ -62,10 +62,9 @@ metres_to_miles(double metres)
  *  coordinate in a system is consistent.
  */
 struct XAPIAN_VISIBILITY_DEFAULT LatLongCoord {
-  public:
     /** A latitude, as decimal degrees.
      *
-     *  Should be in the range -90 <= longitude <= 90
+     *  Should be in the range -90 <= latitude <= 90
      *
      *  Postive latitudes represent the northern hemisphere.
      */
@@ -73,22 +72,33 @@ struct XAPIAN_VISIBILITY_DEFAULT LatLongCoord {
 
     /** A longitude, as decimal degrees.
      *
-     *  Should be in the range -180 < latitude <= 180
+     *  Will be wrapped around, so for example, -150 is equal to 210.  When
+     *  obtained from a serialised form, will be in the range 0 <= longitude <
+     *  360.
      *
-     *  Positive longitudes represent the eastern hemisphere.
+     *  Longitudes increase as coordinates move eastwards.
      */
     double longitude;
 
+    /** Construct an uninitialised coordinate.
+     */
+    LatLongCoord() {}
+
     /** Construct a coordinate.
      *
-     *  If the supplied longitude is out of range, an exception will be raised.
+     *  If the supplied latitude is out of range, an exception will be raised.
      *
-     *  If the supplied latitude is out of range, it will be normalised to the
-     *  appropriate range.
+     *  If the supplied longitude is out of the standard range, it will be
+     *  normalised to the range 0 <= longitude < 360.
+     *
+     *  If you want to avoid the checks (for example, you know that your values
+     *  are already in range, you can use the alternate constructor to
+     *  construct an uninitialised coordinate, and then assing the values
+     *  directly.
      */
     LatLongCoord(double latitude_, double longitude_);
 
-    /** Construct a coordinate by unserialising a string.
+    /** Unserialise a string and set this object to its coordinate.
      *
      *  @param serialised the string to unserialise the coordinate from.
      *
@@ -96,11 +106,11 @@ struct XAPIAN_VISIBILITY_DEFAULT LatLongCoord {
      *  a valid serialised latitude-longitude pair, or contains extra data at
      *  the end of it.
      */
-    static LatLongCoord unserialise(const std::string & serialised);
+    void unserialise(const std::string & serialised);
 
-    /** Construct a coordinate by unserialising a string.
+    /** Unserialise a buffer and set this object to its coordinate.
      *
-     *  The string may contain further data after that for the coordinate.
+     *  The buffer may contain further data after that for the coordinate.
      *
      *  @param ptr A pointer to the start of the string.  This will be updated
      *  to point to the end of the data representing the coordinate.
@@ -109,7 +119,7 @@ struct XAPIAN_VISIBILITY_DEFAULT LatLongCoord {
      *  @exception Xapian::SerialisationError if the string does not contain
      *  a valid serialised latitude-longitude pair.
      */
-    static LatLongCoord unserialise(const char ** ptr, const char * end);
+    void unserialise(const char ** ptr, const char * end);
 
     /** Return a serialised representation of the coordinate.
      */
@@ -127,8 +137,10 @@ struct XAPIAN_VISIBILITY_DEFAULT LatLongCoord {
     std::string get_description() const;
 };
 
+
 // Forward declaration.
 class LatLongCoordsIterator;
+
 
 /// A sequence of latitude-longitude coordinates.
 class XAPIAN_VISIBILITY_DEFAULT LatLongCoords {
@@ -169,7 +181,7 @@ class XAPIAN_VISIBILITY_DEFAULT LatLongCoords {
 	coords.push_back(coord);
     }
 
-    /** Construct by unserialising a string.
+    /** string a buffer and set this object to its coordinates.
      *
      *  @param serialised the string to unserialise the coordinates from.
      *
@@ -177,7 +189,7 @@ class XAPIAN_VISIBILITY_DEFAULT LatLongCoords {
      *  a valid serialised latitude-longitude pair, or contains junk at the end
      *  of it.
      */
-    static LatLongCoords unserialise(const std::string & serialised);
+    void unserialise(const std::string & serialised);
 
     /** Return a serialised form of the coordinate list.
      */
@@ -186,6 +198,7 @@ class XAPIAN_VISIBILITY_DEFAULT LatLongCoords {
     /// Return a string describing this object.
     std::string get_description() const;
 };
+
 
 /// An iterator across the values in a LatLongCoords object.
 class XAPIAN_VISIBILITY_DEFAULT LatLongCoordsIterator {
@@ -203,25 +216,21 @@ class XAPIAN_VISIBILITY_DEFAULT LatLongCoordsIterator {
     /// Default constructor.  Produces an uninitialised iterator.
     LatLongCoordsIterator() {}
 
-    /// Return the current value pointed to by the iterator.
     const LatLongCoord & operator *() const {
 	return *iter;
     }
 
-    /// Pre-increment operator.
     LatLongCoordsIterator & operator++() {
 	++iter;
 	return *this;
     }
 
-    /// Post-increment operator.
     DerefWrapper_<LatLongCoord> operator++(int) {
 	LatLongCoord tmp = **this;
 	++iter;
 	return DerefWrapper_<LatLongCoord>(tmp);
     }
 
-    /// Check for equality with another iterator.
     bool operator==(const LatLongCoordsIterator &other) const
     {
 	return iter == other.iter;
@@ -261,7 +270,8 @@ class XAPIAN_VISIBILITY_DEFAULT LatLongMetric {
 
     /** Return the distance between two coordinates, in metres.
      */
-    virtual double operator()(const LatLongCoord & a, const LatLongCoord &b) const = 0;
+    virtual double pointwise_distance(const LatLongCoord & a,
+				      const LatLongCoord & b) const = 0;
 
     /** Return the distance between two coordinate lists, in metres.
      *
@@ -269,8 +279,46 @@ class XAPIAN_VISIBILITY_DEFAULT LatLongMetric {
      *  pairwise distance between coordinates in the lists.
      *
      *  If either of the lists is empty, an InvalidArgumentError will be raised.
+     *
+     *  @param a The first coordinate list.
+     *  @param b The second coordinate list.
      */
-    double operator()(const LatLongCoords & a, const LatLongCoords &b) const;
+    double operator()(const LatLongCoords & a, const LatLongCoords & b) const;
+
+    /** Return the distance between two coordinate lists, in metres.
+     *
+     *  One of the coordinate lists is supplied in serialised form.
+     *
+     *  The distance between the coordinate lists is defined to the be minimum
+     *  pairwise distance between coordinates in the lists.
+     *
+     *  If either of the lists is empty, an InvalidArgumentError will be raised.
+     *
+     *  @param a The first coordinate list.
+     *  @param b The second coordinate list, in serialised form.
+     */
+    double operator()(const LatLongCoords & a, const std::string & b) const
+    {
+	return (*this)(a, b.data(), b.size());
+    }
+
+    /** Return the distance between two coordinate lists, in metres.
+     *
+     *  One of the coordinate lists is supplied in serialised form.
+     *
+     *  The distance between the coordinate lists is defined to the be minimum
+     *  pairwise distance between coordinates in the lists.
+     *
+     *  If either of the lists is empty, an InvalidArgumentError will be raised.
+     *
+     *  @param a The first coordinate list.
+     *  @param b_ptr The start of the serialised form of the second coordinate
+     *               list.
+     *  @param b_len The length of the serialised form of the second coordinate
+     *               list.
+     */
+    double operator()(const LatLongCoords & a,
+		      const char * b_ptr, size_t b_len) const;
 
     /** Clone the metric. */
     virtual LatLongMetric * clone() const = 0;
@@ -333,7 +381,8 @@ class XAPIAN_VISIBILITY_DEFAULT GreatCircleMetric : public LatLongMetric {
 
     /** Return the great-circle distance between points on the sphere.
      */
-    double operator()(const LatLongCoord & a, const LatLongCoord &b) const;
+    double pointwise_distance(const LatLongCoord & a,
+			      const LatLongCoord &b) const;
 
     LatLongMetric * clone() const;
     std::string name() const;

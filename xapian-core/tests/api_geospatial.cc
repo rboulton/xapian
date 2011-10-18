@@ -2,7 +2,7 @@
  * @brief Tests of geospatial functionality.
  */
 /* Copyright 2008 Lemur Consulting Ltd
- * Copyright 2010 Richard Boulton
+ * Copyright 2010,2011 Richard Boulton
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License as
@@ -187,11 +187,12 @@ DEFINE_TESTCASE(latlongcoords1, !backend) {
 
     // Test serialisation
     std::string s1 = c1.serialise();
-    LatLongCoord c4 = LatLongCoord::unserialise(s1);
+    LatLongCoord c4, c5;
+    c4.unserialise(s1);
     TEST(!(c1 < c4 || c4 < c1));
     const char * ptr = s1.data();
     const char * end = ptr + s1.size();
-    c4 = LatLongCoord::unserialise(&ptr, end);
+    c5.unserialise(&ptr, end);
     TEST_EQUAL(c1.get_description(), c4.get_description());
     TEST_EQUAL(c1.get_description(), "Xapian::LatLongCoord(0, 0)");
     TEST_EQUAL(ptr, end);
@@ -263,6 +264,31 @@ DEFINE_TESTCASE(latlongmetric1, !backend) {
     TEST_EQUAL_DOUBLE(d2, d3);
 
     delete m3;
+
+    return true;
+}
+
+// Test LatLongMetric on lists of coords.
+DEFINE_TESTCASE(latlongmetric2, !backend) {
+    LatLongCoord c1(0, 0);
+    LatLongCoord c2(1, 0);
+    LatLongCoords cl1(c1);
+    LatLongCoords cl2(c2);
+    string c2_str = c2.serialise();
+    string cl2_str = cl2.serialise();
+    TEST_EQUAL(c2_str, cl2_str);
+
+    LatLongCoord c2_check(5, 5);
+    c2_check.unserialise(c2_str);
+    TEST_EQUAL(c2_check.latitude, c2.latitude);
+    TEST_EQUAL(c2_check.longitude, c2.longitude);
+
+    Xapian::GreatCircleMetric m1;
+    double d1 = m1(c1, c2);
+    double dl1 = m1(cl1, cl2);
+    TEST_EQUAL(d1, dl1);
+    double d1_str = m1(cl1, c2_str);
+    TEST_EQUAL(d1, d1_str);
 
     return true;
 }
