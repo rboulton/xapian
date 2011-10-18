@@ -1,3 +1,17 @@
+Tue Oct 18 22:48:29 GMT 2011  Richard Boulton <richard@tartarus.org>
+
+	* geospatial/: Change coordinate unserialisation functions to be
+	  member functions which modify the coordinate, rather than being
+	  static ones that return coordinates, to avoid lots of dynamic
+	  allocations in the posting source.  Rename the virtual metric
+	  operator() member to "pointwise_distance()", to avoid it hiding
+	  the non-virtual overloaded forms of operator().  Add new
+	  metric operator() overloads which take a serialised coordinate
+	  list, and which calculate the distance directly without unpacking
+	  all the coordinates first.  Wrap longitudes to 0..360 range
+	  instead of -180..180 range to match geoencode routines.  Fix some
+	  documentation comments in the public header.
+
 Mon Jun 07 19:27:24 GMT 2010  Richard Boulton <richard@tartarus.org>
 
 	* tests/api_geospatial.cc: Fix latlongcoords1 to work with the new

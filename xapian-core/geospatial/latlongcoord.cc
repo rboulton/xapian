@@ -1,4 +1,4 @@
-/** @file latlong.cc
+/** @file latlongcoord.cc
  * @brief Latitude and longitude representations.
  */
 /* Copyright 2008 Lemur Consulting Ltd
@@ -40,28 +40,25 @@ LatLongCoord::LatLongCoord(double latitude_, double longitude_)
     if (latitude < -90.0 || latitude > 90.0)
 	throw InvalidArgumentError("Latitude out-of-range");
     longitude = fmod(longitude_, 360);
-    if (longitude <= -180) longitude += 360;
-    if (longitude > 180) longitude -= 360;
+    if (longitude < 0) longitude += 360;
 }
 
-LatLongCoord
+void
 LatLongCoord::unserialise(const string & serialised)
 {
     const char * ptr = serialised.data();
     const char * end = ptr + serialised.size();
-    LatLongCoord result = unserialise(&ptr, end);
+    unserialise(&ptr, end);
     if (ptr != end)
 	throw SerialisationError(
 		"Junk found at end of serialised LatLongCoord");
-    return result;
 }
 
-LatLongCoord
+void
 LatLongCoord::unserialise(const char ** ptr, const char * end)
 {
-    double latitude = unserialise_double(ptr, end);
-    double longitude = unserialise_double(ptr, end);
-    return LatLongCoord(latitude, longitude);
+    latitude = unserialise_double(ptr, end);
+    longitude = unserialise_double(ptr, end);
 }
 
 string
@@ -83,20 +80,20 @@ LatLongCoord::get_description() const
     return res;
 }
 
-LatLongCoords
+void
 LatLongCoords::unserialise(const string & serialised)
 {
     const char * ptr = serialised.data();
-    const char * end = ptr + serialised.size();
-    LatLongCoords result;
-    while (ptr != end) {
-	result.coords.push_back(LatLongCoord::unserialise(&ptr, end));
+    const char * end_ptr = ptr + serialised.size();
+    coords.clear();
+    while (ptr != end_ptr) {
+	coords.push_back(LatLongCoord());
+	coords.back().unserialise(&ptr, end_ptr);
     }
-    if (ptr != end) {
+    if (ptr != end_ptr) {
 	throw SerialisationError("Junk found at end of serialised "
 				 "LatLongCoords");
     }
-    return result;
 }
 
 string

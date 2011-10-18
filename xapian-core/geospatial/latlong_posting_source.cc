@@ -46,9 +46,7 @@ weight_from_distance(double dist, double k1, double k2)
 void
 LatLongDistancePostingSource::calc_distance()
 {
-    string val(*value_it);
-    LatLongCoords coords = LatLongCoords::unserialise(val);
-    dist = (*metric)(centre, coords);
+    dist = (*metric)(centre, *value_it);
 }
 
 /// Validate the parameters supplied to LatLongDistancePostingSource.
@@ -220,8 +218,8 @@ LatLongDistancePostingSource::unserialise_with_registry(const string &s,
 	throw NetworkError("Bad serialised LatLongDistancePostingSource - junk at end");
     }
 
-    LatLongCoords new_centre =
-	    LatLongCoords::unserialise(new_serialised_centre);
+    LatLongCoords new_centre;
+    new_centre.unserialise(new_serialised_centre);
 
     const Xapian::LatLongMetric * metric_type =
 	    registry.get_lat_long_metric(new_metric_name);

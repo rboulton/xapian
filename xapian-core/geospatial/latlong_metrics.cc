@@ -45,7 +45,8 @@ LatLongMetric::~LatLongMetric()
 }
 
 double
-LatLongMetric::operator()(const LatLongCoords & a, const LatLongCoords &b) const
+LatLongMetric::operator()(const LatLongCoords & a,
+			  const LatLongCoords &b) const
 {
     if (a.empty() || b.empty()) {
 	throw InvalidArgumentError("Empty coordinate list supplied to LatLongMetric::operator()().");
@@ -60,7 +61,36 @@ LatLongMetric::operator()(const LatLongCoords & a, const LatLongCoords &b) const
 	     b_iter != b.end();
 	     ++b_iter)
 	{
-	    double dist = operator()(*a_iter, *b_iter);
+	    double dist = pointwise_distance(*a_iter, *b_iter);
+	    if (!have_min) {
+		min_dist = dist;
+		have_min = true;
+	    } else if (dist < min_dist) {
+		min_dist = dist;
+	    }
+	}
+    }
+    return min_dist;
+}
+
+double
+LatLongMetric::operator()(const LatLongCoords & a,
+			  const char * b_ptr, size_t b_len) const
+{
+    if (a.empty() || b_len == 0) {
+	throw InvalidArgumentError("Empty coordinate list supplied to LatLongMetric::operator()().");
+    }
+    double min_dist = 0.0;
+    bool have_min = false;
+    LatLongCoord b;
+    const char * b_end = b_ptr + b_len;
+    while (b_ptr != b_end) {
+	b.unserialise(&b_ptr, b_end);
+	for (LatLongCoordsIterator a_iter = a.begin();
+	     a_iter != a.end();
+	     ++a_iter)
+	{
+	    double dist = pointwise_distance(*a_iter, b);
 	    if (!have_min) {
 		min_dist = dist;
 		have_min = true;
@@ -82,8 +112,8 @@ GreatCircleMetric::GreatCircleMetric(double radius_)
 {}
 
 double
-GreatCircleMetric::operator()(const LatLongCoord & a,
-			      const LatLongCoord & b) const
+GreatCircleMetric::pointwise_distance(const LatLongCoord & a,
+				      const LatLongCoord & b) const
 {
     double lata = a.latitude * (M_PI / 180.0);
     double latb = b.latitude * (M_PI / 180.0);
