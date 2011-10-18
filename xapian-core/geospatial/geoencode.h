@@ -30,23 +30,6 @@
 
 namespace GeoEncode {
 
-/** A latitude-longitude coordinate.
- */
-struct LatLongCoord {
-    /** The latitude, in degrees, range from -90 (south pole) to +90 (north
-     *  pole).
-     */
-    double lat;
-
-    /** The longitude in degrees, the usual range being from 0 <= longitude <
-     *  360.
-     *
-     *  Note that longitudes will be wrapped when supplied to the encoding
-     *  function, so other ranges may be used.
-     */
-    double lon;
-};
-
 /** Encode a coordinate and append it to a string.
  *
  * @param lat The latitude coordinate in degrees (ranging from -90 to +90)
@@ -63,28 +46,13 @@ struct LatLongCoord {
 extern bool
 encode(double lat, double lon, std::string & result);
 
-/** Encode a coordinate and append it to a string.
- *
- * @param coord The coordinate to encode.
- * @param result The string to append the result to.
- *
- * @returns true if the encoding was successful, false if there was an error.
- * If there was an error, the result value will be unmodified.  The only cause
- * of error is out-of-range latitudes.  If there was no error, the string will
- * have been extended by 6 bytes.
- */
-inline bool
-encode(const LatLongCoord & coord, std::string & result)
-{
-    return GeoEncode::encode(coord.lat, coord.lon, result);
-}
-
 /** Decode a coordinate from a buffer.
  *
  * @param value A pointer to the start of the buffer to decode.
- *
  * @param len The length of the buffer in bytes.  The buffer must be at least 2
  *            bytes long (this constraint is not checked).
+ * @param lat_ref A reference to a value to return the latitude in.
+ * @param lon_ref A reference to a value to return the longitude in.
  *
  * @returns The decoded coordinate.
  *
@@ -92,13 +60,15 @@ encode(const LatLongCoord & coord, std::string & result)
  * first 6 bytes) will be ignored, and it is possible for invalid inputs to
  * result in out-of-range longitudes.
  */
-extern LatLongCoord
-decode(const char * value, size_t len);
+extern void
+decode(const char * value, size_t len, double & lat_ref, double & lon_ref);
 
 /** Decode a coordinate from a string.
  *
  * @param value The string to decode.  This must be at least 2 bytes long (this
  *              constraint is not checked).
+ * @param lat_ref A reference to a value to return the latitude in.
+ * @param lon_ref A reference to a value to return the longitude in.
  *
  * @returns The decoded coordinate.
  *
@@ -106,10 +76,10 @@ decode(const char * value, size_t len);
  * first 6 bytes) will be ignored, and it is possible for invalid inputs to
  * result in out-of-range longitudes.
  */
-inline LatLongCoord
-decode(const std::string & value)
+inline void
+decode(const std::string & value, double & lat_ref, double & lon_ref)
 {
-    return GeoEncode::decode(value.data(), value.size());
+    return GeoEncode::decode(value.data(), value.size(), lat_ref, lon_ref);
 }
 
 /** A class for decoding coordinates within a bounding box.
@@ -169,14 +139,19 @@ class DecoderWithBoundingBox {
     /** Decode a coordinate.
      *
      *  @param value The coordinate to decode.
-     *
-     *  @param result A structure to store the decoded coordinate in.
+     *  @param lat_ref A reference to a value to return the latitude in.
+     *  @param lon_ref A reference to a value to return the longitude in.
      *
      *  @returns true if the coordinate was in the bounding box (in which case,
      *           @a result will have been updated to contain the coordinate),
      *           or false if the coordinate is outside the bounding box.
+     *
+     *  Note; if this returns false, the values of @a lat_ref and @a lon_ref
+     *  may not have been updated, or may have been updated to incorrect
+     *  values, due to aborting decoding of the coordinate part-way through.
      */
-    bool decode(const std::string & value, LatLongCoord & result) const;
+    bool decode(const std::string & value,
+		double & lat_ref, double & lon_ref) const;
 };
 
 }

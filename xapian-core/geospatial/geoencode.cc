@@ -131,15 +131,15 @@ GeoEncode::encode(double lat, double lon, string & result)
     return true;
 }
 
-GeoEncode::LatLongCoord
-GeoEncode::decode(const char * value, size_t len)
+void
+GeoEncode::decode(const char * value, size_t len,
+		  double & lat_ref, double & lon_ref)
 {
     const unsigned char * ptr
 	    = reinterpret_cast<const unsigned char *>(value);
-    GeoEncode::LatLongCoord result;
     unsigned tmp = (ptr[0] & 0xff) << 8 | (ptr[1] & 0xff);
-    result.lat = tmp % 181;
-    result.lon = tmp / 181;
+    lat_ref = tmp % 181;
+    lon_ref = tmp / 181;
     if (len > 2) {
 	tmp = ptr[2];
 	double lat_m = (tmp >> 4) * 4;
@@ -168,12 +168,11 @@ GeoEncode::decode(const char * value, size_t len)
 	    lon_m += lon_s / 60.0;
 	}
 
-	result.lat += lat_m / 60.0;
-	result.lon += lon_m / 60.0;
+	lat_ref += lat_m / 60.0;
+	lon_ref += lon_m / 60.0;
     }
 
-    result.lat -= 90.0;
-    return result;
+    lat_ref -= 90.0;
 }
 
 /// Calc latitude and longitude in integral number of 16ths of a second
@@ -225,7 +224,8 @@ GeoEncode::DecoderWithBoundingBox::DecoderWithBoundingBox
 
 bool
 GeoEncode::DecoderWithBoundingBox::decode(const std::string & value,
-					  LatLongCoord & result) const
+					  double & lat_ref,
+					  double & lon_ref) const
 {
     unsigned char start = value[0];
     if (discontinuous_longitude_range) {
@@ -242,24 +242,27 @@ GeoEncode::DecoderWithBoundingBox::decode(const std::string & value,
 		return false;
 	}
     }
-    GeoEncode::LatLongCoord decoded = GeoEncode::decode(value);
-    if (decoded.lat < min_lat || decoded.lat > max_lat) {
+    double lat, lon;
+    GeoEncode::decode(value, lat, lon);
+    if (lat < min_lat || lat > max_lat) {
 	return false;
     }
-    if (decoded.lat == -90 || decoded.lat == 90) {
+    if (lat == -90 || lat == 90) {
 	// It's a pole, so the longitude isn't meaningful (will be zero)
 	// and we've already checked that the latitude is in range.
-	result = decoded;
+	lat_ref = lat;
+	lon_ref = 0;
 	return true;
     }
     if (discontinuous_longitude_range) {
-	if (lon2 < decoded.lon && decoded.lon < lon1)
+	if (lon2 < lon && lon < lon1)
 	    return false;
     } else {
-	if (decoded.lon < lon1 || lon2 < decoded.lon)
+	if (lon < lon1 || lon2 < lon)
 	    return false;
     }
 
-    result = decoded;
+    lat_ref = lat;
+    lon_ref = lon;
     return true;
 }
