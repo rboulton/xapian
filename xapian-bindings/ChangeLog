@@ -14,6 +14,7 @@ Sun Jun 06 15:10:47 GMT 2010  Richard Boulton <richard@tartarus.org>
 
 	* csharp/Makefile.am,xapian.i: Apply patch geospatial_clean3.patch
 	  from ticket #481: adds basic geospatial search support.
+
 Wed Oct 05 13:31:25 GMT 2011  Olly Betts <olly@survex.com>
 
 	* ruby/smoketest.rb,ruby/xapian.rb: Wrap optional prefix parameter to
