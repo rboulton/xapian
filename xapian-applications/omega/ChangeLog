@@ -1,3 +1,37 @@
+Fri Oct 14 12:36:43 GMT 2011  Olly Betts <olly@survex.com>
+
+	* configure.ac,runfilter.cc: If we don't get any data from a filter
+	  for 5 minutes, give up - it has probably ended up blocked
+	  indefinitely.
+
+Mon Sep 26 01:22:08 GMT 2011  Olly Betts <olly@survex.com>
+
+	* templates/query: HTML escape topterms.
+
+Mon Sep 26 00:52:42 GMT 2011  Olly Betts <olly@survex.com>
+
+	* templates/godmode: HTML escape the contents of document values.
+
+Fri Sep 23 04:09:12 GMT 2011  Olly Betts <olly@survex.com>
+
+	* Makefile.am,omindex.cc,tmpdir.cc,tmpdir.h: Factor out tmpdir handling
+	  into a separate source file.
+
+Fri Sep 23 01:49:38 GMT 2011  Olly Betts <olly@survex.com>
+
+	* omindex.cc: Factor out index_mimetype() function as a step towards
+	  allowing indexing files within other files (like zip files and email
+	  attachments).
+
+Fri Sep 23 00:54:40 GMT 2011  Olly Betts <olly@survex.com>
+
+	* omindex.cc: Use string::const_iterator where we don't modify the
+	  string.
+
+Thu Sep 01 12:28:36 GMT 2011  Olly Betts <olly@survex.com>
+
+	* xapian-omega.spec.in: Package outlookmsg2html helper.
+
 Fri Aug 12 23:25:45 GMT 2011  Olly Betts <olly@survex.com>
 
 	* NEWS: Update from 1.2.7 and ChangeLog.

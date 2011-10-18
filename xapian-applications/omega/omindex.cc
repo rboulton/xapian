@@ -55,6 +55,7 @@
 #include "str.h"
 #include "stringutils.h"
 #include "svgparse.h"
+#include "tmpdir.h"
 #include "urlencode.h"
 #include "utf8convert.h"
 #include "utils.h"
@@ -63,10 +64,6 @@
 #include "xpsxmlparse.h"
 
 #include "gnu_getopt.h"
-
-#ifndef HAVE_MKDTEMP
-extern char * mkdtemp(char *);
-#endif
 
 using namespace std;
 
@@ -94,8 +91,6 @@ static Xapian::TermGenerator indexer;
 static Xapian::doccount old_docs_not_seen;
 static Xapian::docid old_lastdocid;
 static vector<bool> updated;
-
-static string tmpdir;
 
 static time_t last_mod_max;
 
@@ -165,23 +160,6 @@ shell_protect(const string & file)
     }
 #endif
     return safefile;
-}
-
-static bool ensure_tmpdir() {
-    if (!tmpdir.empty()) return true;
-
-    const char * p = getenv("TMPDIR");
-    if (!p) p = "/tmp";
-    char * dir_template = new char[strlen(p) + 15 + 1];
-    strcpy(dir_template, p);
-    strcat(dir_template, "/omindex-XXXXXX");
-    p = mkdtemp(dir_template);
-    if (p) {
-	tmpdir.assign(dir_template);
-	tmpdir += '/';
-    }
-    delete [] dir_template;
-    return (p != NULL);
 }
 
 static void
@@ -328,6 +306,10 @@ skip_unknown_mimetype(const string & file, const string & mimetype)
     skip(file, "unknown MIME type '" + mimetype + "'");
 }
 
+void
+index_mimetype(const string & file, const string & url, const string & ext,
+	       const string &mimetype, DirectoryIterator &d);
+
 static void
 index_file(const string &file, const string &url, DirectoryIterator & d,
 	   map<string, string>& mime_map)
@@ -382,6 +364,13 @@ index_file(const string &file, const string &url, DirectoryIterator & d,
 	return;
     }
 
+    index_mimetype(file, url, ext, mimetype, d);
+}
+
+void
+index_mimetype(const string & file, const string & url, const string & ext,
+	       const string &mimetype, DirectoryIterator &d)
+{
     string urlterm("U");
     urlterm += url;
 
@@ -511,7 +500,8 @@ index_file(const string &file, const string &url, DirectoryIterator & d,
 	    // some Chinese PostScript files I found using Google.  It also has
 	    // the benefit of allowing us to extract meta information from
 	    // PostScript files.
-	    if (!ensure_tmpdir()) {
+	    string tmpfile = get_tmpdir();
+	    if (tmpfile.empty()) {
 		// FIXME: should this be fatal?  Or disable indexing postscript?
 		string msg = "Couldn't create temporary directory (";
 		msg += strerror(errno);
@@ -519,7 +509,7 @@ index_file(const string &file, const string &url, DirectoryIterator & d,
 		skip(file, msg);
 		return;
 	    }
-	    string tmpfile = tmpdir + "/tmp.pdf";
+	    tmpfile += "/tmp.pdf";
 	    string safetmp = shell_protect(tmpfile);
 	    string cmd = "ps2pdf " + shell_protect(file) + " " + safetmp;
 	    try {
@@ -905,7 +895,7 @@ index_file(const string &file, const string &url, DirectoryIterator & d,
 	}
 
 	string ext_term("E");
-	for (string::iterator i = ext.begin(); i != ext.end(); ++i) {
+	for (string::const_iterator i = ext.begin(); i != ext.end(); ++i) {
 	    char ch = *i;
 	    if (ch >= 'A' && ch <= 'Z')
 		ch |= 32;
@@ -1463,7 +1453,7 @@ main(int argc, char **argv)
     }
 
     // If we created a temporary directory then delete it.
-    if (!tmpdir.empty()) rmdir(tmpdir.c_str());
+    remove_tmpdir();
 
     return exitcode;
 }
