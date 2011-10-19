@@ -25,6 +25,7 @@
 #include "xapian/geospatial.h"
 #include "xapian/error.h"
 
+#include "geoencode.h"
 #include "serialise.h"
 #include "serialise-double.h"
 #include "str.h"
@@ -58,15 +59,25 @@ LatLongCoord::unserialise(const string & serialised)
 void
 LatLongCoord::unserialise(const char ** ptr, const char * end)
 {
-    latitude = unserialise_double(ptr, end);
-    longitude = unserialise_double(ptr, end);
+    size_t len = end - *ptr;
+    if (len < 2) {
+	latitude = 0;
+	longitude = 0;
+	return;
+    }
+    GeoEncode::decode(*ptr, end - *ptr, latitude, longitude);
+    if (len < 6) {
+	*ptr = end;
+    } else {
+	*ptr += 6;
+    }
 }
 
 string
 LatLongCoord::serialise() const
 {
-    string result(serialise_double(latitude));
-    result += serialise_double(longitude);
+    string result;
+    GeoEncode::encode(latitude, longitude, result);
     return result;
 }
 
@@ -104,8 +115,7 @@ LatLongCoords::serialise() const
     vector<LatLongCoord>::const_iterator coord;
     for (coord = coords.begin(); coord != coords.end(); ++coord)
     {
-	result += serialise_double(coord->latitude);
-	result += serialise_double(coord->longitude);
+	GeoEncode::encode(coord->latitude, coord->longitude, result);
     }
     return result;
 }
