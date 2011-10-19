@@ -172,11 +172,22 @@ exact distance from the query location can be calculated.  However, this method
 requires that the distance of each potential match is checked, which can be
 expensive.
 
-Some experimental code exists to produce terms corresponding to a hierarchical
-index of locations (using the O-QTM algorithm - see references below), which
-can be used to narrow down the search so that only a small number of potential
-matches need to be checked.  Contact the Xapian developers (on email or IRC) if
-you would like to help finish and test this code.
+To gain a performance boost, it is possible to store additional terms in
+documents to identify regions at various scales.  There are various ways to
+generate such terms (for example, the O-QTM algorithm referenced below).
+However, the encoding for coodinates that Xapian uses has some nice properties
+which help here.  Specifically, the standard encoded form for a coordinate used
+is a 6 byte representation, which identifies a point on the surface of the
+earth to an accuracy of 1/16 of a second (ie, at worst slightly less than 2
+meter accuracy).  However, this representation can be truncated to 2 bytes to
+represent a bounding box 1 degree on a side, or to 3, 4 or 5 bytes to get
+successively more accurate bounding boxes.
+
+It would therefore be possible to gain considerable efficiency for range
+restricted searches by storing terms holding each of these successively more
+accurate representations, and to construct a query combining an appropriate set
+of these terms to ensure that only documents which are potentially in a range
+of interest are considered.
 
 It is entirely possible that a more efficient implementation could be performed
 using "R trees" or "KD trees" (or one of the many other tree structures used
@@ -188,6 +199,8 @@ existing optimisations of the Xapian query parser are taken advantage of.
 
 References
 ==========
+
+The following may be of interest.
 
 The O-QTM algorithm is described in "Dutton, G. (1996). Encoding and handling
 geospatial data with hierarchical triangular meshes. In Kraak, M.J. and
