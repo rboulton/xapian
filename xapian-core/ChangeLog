@@ -1,3 +1,8 @@
+Thu Jan 12 21:27:06 GMT 2012  Olly Betts <olly@survex.com>
+
+	* geospatial/latlong_posting_source.cc,geospatial/latlongcoord.cc:
+	  Fix include paths to serialise.h.
+
 Fri Dec 16 03:05:17 GMT 2011  Olly Betts <olly@survex.com>
 
 	* backends/brass/brass_termlisttable.cc,

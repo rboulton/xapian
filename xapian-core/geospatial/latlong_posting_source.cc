@@ -28,7 +28,7 @@
 #include "xapian/error.h"
 #include "xapian/registry.h"
 
-#include "serialise.h"
+#include "net/serialise.h"
 #include "serialise-double.h"
 #include "str.h"
 
