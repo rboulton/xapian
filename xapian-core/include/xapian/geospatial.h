@@ -3,6 +3,7 @@
  */
 /* Copyright 2008,2009 Lemur Consulting Ltd
  * Copyright 2010,2011 Richard Boulton
+ * Copyright 2012 Olly Betts
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License as
@@ -66,7 +67,7 @@ struct XAPIAN_VISIBILITY_DEFAULT LatLongCoord {
      *
      *  Should be in the range -90 <= latitude <= 90
      *
-     *  Postive latitudes represent the northern hemisphere.
+     *  Positive latitudes represent the northern hemisphere.
      */
     double latitude;
 
@@ -92,9 +93,9 @@ struct XAPIAN_VISIBILITY_DEFAULT LatLongCoord {
      *  normalised to the range 0 <= longitude < 360.
      *
      *  If you want to avoid the checks (for example, you know that your values
-     *  are already in range, you can use the alternate constructor to
-     *  construct an uninitialised coordinate, and then assing the values
-     *  directly.
+     *  are already in range), you can use the alternate constructor to
+     *  construct an uninitialised coordinate, and then set the latitude and
+     *  longitude directly.
      */
     LatLongCoord(double latitude_, double longitude_);
 
@@ -148,7 +149,7 @@ class XAPIAN_VISIBILITY_DEFAULT LatLongCoords {
     std::vector<LatLongCoord> coords;
 
   public:
-    /// Get an begin iterator for the coordinates.
+    /// Get a begin iterator for the coordinates.
     LatLongCoordsIterator begin() const;
 
     /// Get an end iterator for the coordinates.
@@ -181,7 +182,7 @@ class XAPIAN_VISIBILITY_DEFAULT LatLongCoords {
 	coords.push_back(coord);
     }
 
-    /** string a buffer and set this object to its coordinates.
+    /** Unserialise a string and set this object to the coordinates in it.
      *
      *  @param serialised the string to unserialise the coordinates from.
      *
@@ -226,7 +227,7 @@ class XAPIAN_VISIBILITY_DEFAULT LatLongCoordsIterator {
     }
 
     DerefWrapper_<LatLongCoord> operator++(int) {
-	LatLongCoord tmp = **this;
+	const LatLongCoord & tmp = **this;
 	++iter;
 	return DerefWrapper_<LatLongCoord>(tmp);
     }
@@ -275,7 +276,7 @@ class XAPIAN_VISIBILITY_DEFAULT LatLongMetric {
 
     /** Return the distance between two coordinate lists, in metres.
      *
-     *  The distance between the coordinate lists is defined to the be minimum
+     *  The distance between the coordinate lists is defined to be the minimum
      *  pairwise distance between coordinates in the lists.
      *
      *  If either of the lists is empty, an InvalidArgumentError will be raised.
@@ -289,7 +290,7 @@ class XAPIAN_VISIBILITY_DEFAULT LatLongMetric {
      *
      *  One of the coordinate lists is supplied in serialised form.
      *
-     *  The distance between the coordinate lists is defined to the be minimum
+     *  The distance between the coordinate lists is defined to be the minimum
      *  pairwise distance between coordinates in the lists.
      *
      *  If either of the lists is empty, an InvalidArgumentError will be raised.
@@ -306,7 +307,7 @@ class XAPIAN_VISIBILITY_DEFAULT LatLongMetric {
      *
      *  One of the coordinate lists is supplied in serialised form.
      *
-     *  The distance between the coordinate lists is defined to the be minimum
+     *  The distance between the coordinate lists is defined to be the minimum
      *  pairwise distance between coordinates in the lists.
      *
      *  If either of the lists is empty, an InvalidArgumentError will be raised.
@@ -395,7 +396,7 @@ class XAPIAN_VISIBILITY_DEFAULT GreatCircleMetric : public LatLongMetric {
  *  Results are weighted by the distance from a fixed point, or list of points,
  *  calculated according to the metric supplied.  If multiple points are
  *  supplied (either in the constructor, or in the coordinates stored in a
- *  document) , the closest pointwise distance is returned.
+ *  document), the closest pointwise distance is returned.
  *
  *  Documents further away than a specified maximum range (or with no location
  *  stored in the specified slot) will not be returned.
