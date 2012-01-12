@@ -33,21 +33,21 @@
 #include "submatch.h"
 #include "localsubmatch.h"
 #include "omassert.h"
-#include "omenquireinternal.h"
+#include "api/omenquireinternal.h"
 
-#include "emptypostlist.h"
+#include "api/emptypostlist.h"
 #include "branchpostlist.h"
 #include "mergepostlist.h"
 
-#include "document.h"
-#include "omqueryinternal.h"
+#include "backends/document.h"
+#include "api/omqueryinternal.h"
 
 #include "submatch.h"
 
 #include "msetcmp.h"
 
 #include "valuestreamdocument.h"
-#include "weightinternal.h"
+#include "weight/weightinternal.h"
 
 #include <xapian/errorhandler.h>
 #include <xapian/matchspy.h>
@@ -55,7 +55,7 @@
 
 #ifdef XAPIAN_HAS_REMOTE_BACKEND
 #include "remotesubmatch.h"
-#include "remote-database.h"
+#include "backends/remote/remote-database.h"
 #endif /* XAPIAN_HAS_REMOTE_BACKEND */
 
 #include <algorithm>

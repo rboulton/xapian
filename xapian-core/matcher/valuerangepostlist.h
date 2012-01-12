@@ -1,7 +1,7 @@
 /** @file valuerangepostlist.h
  * @brief Return document ids matching a range test on a specified doc value.
  */
-/* Copyright 2007,2008,2009 Olly Betts
+/* Copyright 2007,2008,2009,2011 Olly Betts
  * Copyright 2009 Lemur Consulting Ltd
  * Copyright 2010 Richard Boulton
  *
@@ -23,9 +23,9 @@
 #ifndef XAPIAN_INCLUDED_VALUERANGEPOSTLIST_H
 #define XAPIAN_INCLUDED_VALUERANGEPOSTLIST_H
 
-#include "database.h"
-#include "postlist.h"
-#include "valuelist.h"
+#include "backends/database.h"
+#include "api/postlist.h"
+#include "backends/valuelist.h"
 
 class ValueRangePostList : public PostList {
   protected:

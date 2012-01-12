@@ -28,8 +28,8 @@
 #include "xapian/error.h"
 #include "xapian/version.h"
 
-#include "database.h"
-#include "databasereplicator.h"
+#include "backends/database.h"
+#include "backends/databasereplicator.h"
 #include "debuglog.h"
 #include "fileutils.h"
 #ifdef __WIN32__
@@ -37,12 +37,12 @@
 #endif
 #include "omassert.h"
 #include "realtime.h"
-#include "remoteconnection.h"
+#include "net/remoteconnection.h"
 #include "replicationprotocol.h"
 #include "safeerrno.h"
 #include "safesysstat.h"
 #include "safeunistd.h"
-#include "serialise.h"
+#include "net/serialise.h"
 #include "str.h"
 #include "utils.h"
 

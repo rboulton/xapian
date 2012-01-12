@@ -1,7 +1,7 @@
 /** @file localsubmatch.cc
  *  @brief SubMatch class for a local database.
  */
-/* Copyright (C) 2006,2007,2009,2010 Olly Betts
+/* Copyright (C) 2006,2007,2009,2010,2011 Olly Betts
  * Copyright (C) 2007,2008,2009 Lemur Consulting Ltd
  *
  * This program is free software; you can redistribute it and/or modify
@@ -23,16 +23,16 @@
 
 #include "localsubmatch.h"
 
-#include "database.h"
+#include "backends/database.h"
 #include "debuglog.h"
 #include "extraweightpostlist.h"
-#include "leafpostlist.h"
+#include "api/leafpostlist.h"
 #include "omassert.h"
-#include "omqueryinternal.h"
+#include "api/omqueryinternal.h"
 #include "queryoptimiser.h"
 #include "synonympostlist.h"
-#include "termlist.h"
-#include "weightinternal.h"
+#include "api/termlist.h"
+#include "weight/weightinternal.h"
 
 #include "autoptr.h"
 #include <map>

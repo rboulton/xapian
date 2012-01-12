@@ -97,11 +97,13 @@ class XAPIAN_VISIBILITY_DEFAULT MSet {
 	/** This converts the weight supplied to a percentage score.
 	 *  The return value will be in the range 0 to 100, and will be 0 if
 	 *  and only if the item did not match the query at all.
+	 *
+	 *  @param wt	The weight to convert.
 	 */
-	Xapian::percent convert_to_percent(Xapian::weight wt) const;
+	int convert_to_percent(Xapian::weight wt) const;
 
 	/// Return the percentage score for a particular item.
-	Xapian::percent convert_to_percent(const MSetIterator &it) const;
+	int convert_to_percent(const MSetIterator &it) const;
 
 	/** Return the term frequency of the given query term.
 	 *
@@ -234,6 +236,8 @@ class XAPIAN_VISIBILITY_DEFAULT MSet {
 	 *
 	 *  In other words, the offset is into the documents represented by
 	 *  this object, not into the set of documents matching the query.
+	 *
+	 *  @param i	The index into the MSet.
 	 */
 	MSetIterator operator[](Xapian::doccount i) const;
 
@@ -370,6 +374,11 @@ class XAPIAN_VISIBILITY_DEFAULT MSetIterator {
 
 	/** This returns the weight of the document as a percentage score.
 	 *
+	 *  You probably don't want to show these percentage scores to end
+	 *  users in new applications - they're not really a percentage of
+	 *  anything meaningful, and research seems to suggest that users
+	 *  don't find numeric scores in search results useful.
+	 *
 	 *  The return value will be an integer in the range 0 to 100:  0
 	 *  meaning that the item did not match the query at all.
 	 *
@@ -383,7 +392,7 @@ class XAPIAN_VISIBILITY_DEFAULT MSetIterator {
 	 *  having to apply the MatchDecider to potentially many more
 	 *  documents, which is potentially costly).
 	 */
-	Xapian::percent get_percent() const;
+	int get_percent() const;
 
 	/// Return a string describing this object.
 	std::string get_description() const;
@@ -461,7 +470,10 @@ class XAPIAN_VISIBILITY_DEFAULT ESet {
 	/** Iterator pointing to the last element of this E-Set */
 	ESetIterator back() const;
 
-	/** This returns the term at position i in this E-Set.  */
+	/** This returns the term at position i in this E-Set.
+	 *
+	 *  @param i	The index into the ESet.
+	 */
 	ESetIterator operator[](Xapian::termcount i) const;
 
 	/// Return a string describing this object.
@@ -614,7 +626,9 @@ class XAPIAN_VISIBILITY_DEFAULT MatchDecider {
     public:
 	/** Decide whether we want this document to be in the MSet.
 	 *
-	 *  Return true if the document is acceptable, or false if the document
+	 *  @param doc	The document to test.
+	 *
+	 *  @return true if the document is acceptable, or false if the document
 	 *  should be excluded from the MSet.
 	 */
 	virtual bool operator()(const Xapian::Document &doc) const = 0;
@@ -810,7 +824,7 @@ class XAPIAN_VISIBILITY_DEFAULT Enquire {
 	 *	specified weighting scheme.
 	 *	(default 0 => no weight cut-off).
 	 */
-	void set_cutoff(Xapian::percent percent_cutoff, Xapian::weight weight_cutoff = 0);
+	void set_cutoff(int percent_cutoff, Xapian::weight weight_cutoff = 0);
 
 	/** Set the sorting to be by relevance only.
 	 *
@@ -976,8 +990,6 @@ class XAPIAN_VISIBILITY_DEFAULT Enquire {
 	 *		     (default is 1.0)
 	 *  @param edecider  a decision functor to use to decide whether a
 	 *		     given term should be put in the ESet
-	 *
-	 *  @param min_wt    the minimum weight for included terms
 	 *
 	 *  @return	     An ESet object containing the results of the
 	 *		     expand.

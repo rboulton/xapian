@@ -33,14 +33,14 @@
 
 #include "omassert.h"
 #include "debuglog.h"
-#include "../backends/multi/multi_postlist.h"
-#include "../backends/multi/multi_termlist.h"
-#include "alltermslist.h"
-#include "multialltermslist.h"
-#include "multivaluelist.h"
-#include "database.h"
+#include "backends/alltermslist.h"
+#include "backends/multi/multi_alltermslist.h"
+#include "backends/multi/multi_postlist.h"
+#include "backends/multi/multi_termlist.h"
+#include "backends/multivaluelist.h"
+#include "backends/database.h"
 #include "editdistance.h"
-#include "ortermlist.h"
+#include "expand/ortermlist.h"
 #include "noreturn.h"
 
 #include <cstdlib> // For abs().

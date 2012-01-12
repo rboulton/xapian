@@ -1,51 +1,25 @@
 noinst_HEADERS +=\
-	common/alltermslist.h\
 	common/autoptr.h\
 	common/bitstream.h\
 	common/closefrom.h\
-	common/contiguousalldocspostlist.h\
-	common/database.h\
-	common/databasereplicator.h\
 	common/debuglog.h\
-	common/document.h\
-	common/documentterm.h\
-	common/emptypostlist.h\
-	common/esetinternal.h\
-	common/expandweight.h\
+	common/fd.h\
 	common/fileutils.h\
 	common/gnu_getopt.h\
-	common/inmemory_positionlist.h\
 	common/internaltypes.h\
 	common/io_utils.h\
-	common/leafpostlist.h\
 	common/msvc_dirent.h\
 	common/msvc_posix_wrapper.h\
-	common/multialltermslist.h\
-	common/multimatch.h\
-	common/multivaluelist.h\
 	common/noreturn.h\
 	common/omassert.h\
-	common/omenquireinternal.h\
-	common/omqueryinternal.h\
-	common/ortermlist.h\
 	common/output.h\
-	common/positionlist.h\
+	common/output-internal.h\
 	common/pack.h\
-	common/postlist.h\
 	common/pretty.h\
-	common/progclient.h\
 	common/realtime.h\
 	common/registryinternal.h\
-	common/remoteconnection.h\
-	common/remote-database.h\
 	common/remoteprotocol.h\
-	common/remoteserver.h\
-	common/remotetcpclient.h\
-	common/remotetcpserver.h\
 	common/replicate_utils.h\
-	common/replicatetcpclient.h\
-	common/replicatetcpserver.h\
-	common/replication.h\
 	common/replicationprotocol.h\
 	common/safedirent.h\
 	common/safeerrno.h\
@@ -58,19 +32,12 @@ noinst_HEADERS +=\
 	common/safewindows.h\
 	common/safewinsock2.h\
 	common/serialise-double.h\
-	common/serialise.h\
 	common/socket_utils.h\
 	common/str.h\
 	common/stringutils.h\
 	common/submatch.h\
-	common/tcpclient.h\
-	common/tcpserver.h\
-	common/termlist.h\
 	common/unaligned.h\
-	common/utils.h\
-	common/valuelist.h\
-	common/valuestats.h\
-	common/weightinternal.h
+	common/utils.h
 
 EXTRA_DIST +=\
 	common/dir_contents\

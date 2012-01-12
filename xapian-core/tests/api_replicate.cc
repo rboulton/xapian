@@ -26,9 +26,11 @@
 #include "api_replicate.h"
 
 #include <xapian.h>
+#include "api/replication.h"
 
 #include "apitest.h"
 #include "dbcheck.h"
+#include "fd.h"
 #include "safeerrno.h"
 #include "safefcntl.h"
 #include "safesysstat.h"
@@ -101,17 +103,17 @@ static void do_write(int fd, const char * p, size_t n)
 static off_t
 truncated_copy(const string & srcpath, const string & destpath, off_t tocopy)
 {
-    int fdin = open(srcpath.c_str(), O_RDONLY);
+    FD fdin(open(srcpath.c_str(), O_RDONLY));
     if (fdin == -1) {
 	FAIL_TEST("Open failed (when opening '" + srcpath + "')");
     }
 
-    int fdout = open(destpath.c_str(), O_WRONLY | O_CREAT | O_TRUNC, 0666);
+    FD fdout(open(destpath.c_str(), O_WRONLY | O_CREAT | O_TRUNC, 0666));
     if (fdout == -1) {
 	FAIL_TEST("Open failed (when creating '" + destpath + "')");
     }
 
-#define BUFSIZE 1024
+    const int BUFSIZE = 1024;
     char buf[BUFSIZE];
     size_t total_bytes = 0;
     while (tocopy > 0) {
@@ -124,10 +126,9 @@ truncated_copy(const string & srcpath, const string & destpath, off_t tocopy)
 	total_bytes += bytes;
 	do_write(fdout, buf, bytes);
     }
-#undef BUFSIZE
 
-    close(fdin);
-    close(fdout);
+    if (close(fdout) == -1)
+	FAIL_TEST("Error closing file");
 
     return total_bytes;
 }
@@ -142,12 +143,11 @@ get_changeset(const string & changesetpath,
 	      int expected_fullcopies,
 	      bool expected_changed)
 {
-    int fd = open(changesetpath.c_str(), O_WRONLY | O_CREAT | O_TRUNC, 0666);
+    FD fd(open(changesetpath.c_str(), O_WRONLY | O_CREAT | O_TRUNC, 0666));
     if (fd == -1) {
 	FAIL_TEST("Open failed (when creating a new changeset file at '"
 		  + changesetpath + "')");
     }
-    fdcloser fdc(fd);
     Xapian::ReplicationInfo info1;
     master.write_changesets_to_fd(fd, replica.get_revision_info(), &info1);
 
@@ -163,12 +163,11 @@ apply_changeset(const string & changesetpath,
 		int expected_fullcopies,
 		bool expected_changed)
 {
-    int fd = open(changesetpath.c_str(), O_RDONLY);
+    FD fd(open(changesetpath.c_str(), O_RDONLY));
     if (fd == -1) {
 	FAIL_TEST("Open failed (when reading changeset file at '"
 		  + changesetpath + "')");
     }
-    fdcloser fdc(fd);
 
     int count = 1;
     replica.set_read_fd(fd);

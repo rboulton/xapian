@@ -1,10 +1,48 @@
- 15973       olly Sat Aug 06 05:15:53 GMT 2011  Olly Betts <olly@survex.com>
+ 16160       olly Fri Dec 09 10:33:25 GMT 2011  Olly Betts <olly@survex.com>
 
 trunk only:
 
+ 16157       olly Fri Dec 09 07:51:44 GMT 2011  Olly Betts <olly@survex.com>
+	* include/xapian/types.h: Set BAD_VALUENO to 0xffffffff rather than
+	  static_cast<valueno>(-1) - it's the same value currently, but more
+	  robust to valueno being set a wider type.
+
+ Stop common being a melting pot of random headers.
+
+	  Move delve from
+	  examples to bin and rename to xapian-delve.
+
+	* queryparser/lemon.c: Merge http://www.sqlite.org/src/info/d66a0f31eb:
+	  Adjust the lemon implementation so that it always computes the same
+	  PDA regardless of qsort() implementation on the host platform. In
+	  other words, make all sorts in lemon stable.
+
+	* tests/queryparsertest.cc: Add cases to ensure a quoted boolean
+	  prefix accepts an empty value or a single space.
+
+	  Deprecate Xapian::percent and use int instead in the API and our
+	  own code.
+
+	* Makefile.am: Since we require GNU find for the coverage-check target,
+	  make use of its -delete option, so we no longer also need GNU xargs.
+
+	* bin/xapian-check.cc: Throw Xapian::FeatureUnavailableError if
+	  backends are disabled, rather than const char *.
+
+	  xapian-check: Instead of giving cryptic numeric codes for
+	  B-tree errors and then throwing const char *, throw
+	  Xapian::DatabaseError() exceptions with string descriptions.
+
+	   Reimplement VectorTermList to store the
+	  list of terms encoded into a single std::string, which is a lot more
+	  memory efficient that std::vector<std::string>.
+
+Factor out common exception throwing functions in several places.
+
 backported:
 
-Xapian-core 1.3.0 (2011-08-06):
+
+Xapian-core 1.3.0 (2011-12-13):
 
 	  Convert to use xapian/intrusive_ptr.h instead of xapian/base.h.
 
@@ -176,6 +214,44 @@ debug code:
 	  common/documentterm.h,net/progclient.cc: Fix uses of LOGCALL_VOID
 	  which should be LOGCALL_CTOR.
 
+
+Xapian-core 1.2.8 (2011-12-13):
+
+API:
+
+* Add support to TermGenerator and QueryParser for indexing and searching CJK
+  text using n-grams.  Currently this is only enabled when the environmental
+  variable XAPIAN_CJK_NGRAM is set to a non-empty value.
+
+documentation:
+
+* Add link from index page to apidoc.pdf.
+
+* quickstart.html: Correct link which was to quickstartsearch.cc.html but
+  should be to quickstartindex.cc.html.
+
+* overview.html,quickstart.html: Fix several factual errors.
+
+* API documentation:
+
+  + Improve documentation comments for several methods.
+
+  + Add documentation for function parameters which didn't have it.
+
+  + Remove bogus paragraph in WritableDatabase::replace_document()
+    documentation comment which had been cut and pasted from delete_document()
+    documentation comment.  (Fixes ticket#579)
+
+  + Explicitly document which value slot numbers are valid.  (Fixes ticket#555)
+
+  + Escape < and > in doxygen comments so "<foo>" doesn't get eaten by doxygen.
+
+portability:
+
++ Some fixes for warnings when cross-compiling to mingw.
+
+* tests/soaktest/soaktest.cc: With Sun's compiler, random() and srandom()
+  aren't in <cstdlib> so we need to use <stdlib.h> instead.
 
 Xapian-core 1.2.7 (2011-08-10):
 

@@ -22,11 +22,11 @@
 #ifndef XAPIAN_INCLUDED_REMOTE_DATABASE_H
 #define XAPIAN_INCLUDED_REMOTE_DATABASE_H
 
-#include "database.h"
-#include "omenquireinternal.h"
-#include "omqueryinternal.h"
-#include "remoteconnection.h"
-#include "valuestats.h"
+#include "backends/database.h"
+#include "api/omenquireinternal.h"
+#include "api/omqueryinternal.h"
+#include "net/remoteconnection.h"
+#include "backends/valuestats.h"
 #include "xapian/weight.h"
 
 namespace Xapian {

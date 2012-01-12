@@ -1,7 +1,7 @@
 /** @file postingsource.cc
  * @brief External sources of posting information
  */
-/* Copyright (C) 2008,2009,2010 Olly Betts
+/* Copyright (C) 2008,2009,2010,2011 Olly Betts
  * Copyright (C) 2008,2009 Lemur Consulting Ltd
  * Copyright (C) 2010 Richard Boulton
  *
@@ -26,16 +26,16 @@
 
 #include "autoptr.h"
 
-#include "database.h"
-#include "document.h"
-#include "multimatch.h"
+#include "backends/database.h"
+#include "backends/document.h"
+#include "matcher/multimatch.h"
 
 #include "xapian/document.h"
 #include "xapian/error.h"
 #include "xapian/queryparser.h" // For sortable_unserialise().
 
 #include "omassert.h"
-#include "serialise.h"
+#include "net/serialise.h"
 #include "serialise-double.h"
 #include "str.h"
 

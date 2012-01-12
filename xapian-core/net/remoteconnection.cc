@@ -26,22 +26,21 @@
 
 #include "safeerrno.h"
 #include "safefcntl.h"
+#include "safesysselect.h"
 #include "safeunistd.h"
 
 #include <algorithm>
 #include <string>
 
 #include "debuglog.h"
+#include "fd.h"
 #include "noreturn.h"
 #include "omassert.h"
 #include "realtime.h"
 #include "serialise.h"
 #include "socket_utils.h"
-#include "utils.h"
 
-#ifndef __WIN32__
-# include "safesysselect.h"
-#else
+#ifdef __WIN32__
 # include "msvc_posix_wrapper.h"
 #endif
 
@@ -596,12 +595,11 @@ RemoteConnection::receive_file(const string &file, double end_time)
 
 #ifdef __WIN32__
     // Do we want to be able to delete the file during writing?
-    int fd = msvc_posix_open(file.c_str(), O_WRONLY|O_CREAT|O_TRUNC);
+    FD fd(msvc_posix_open(file.c_str(), O_WRONLY|O_CREAT|O_TRUNC));
 #else
-    int fd = open(file.c_str(), O_WRONLY|O_CREAT|O_TRUNC, 0666);
+    FD fd(open(file.c_str(), O_WRONLY|O_CREAT|O_TRUNC, 0666));
 #endif
     if (fd == -1) throw Xapian::NetworkError("Couldn't open file for writing: " + file, errno);
-    fdcloser closefd(fd);
 
     read_at_least(2, end_time);
     size_t len = static_cast<unsigned char>(buffer[1]);

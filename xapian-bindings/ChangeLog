@@ -1,3 +1,92 @@
+Tue Dec 20 11:03:37 GMT 2011  Olly Betts <olly@survex.com>
+
+	* README,configure.ac,python/docs/index.html,python/python.i: Handle
+	  the GIL in a way which also works in sub-interpreters.  Fixes
+	  ticket #364.
+	* python/pythontest2.py: Run tests as before, and then (if Python
+	  supports threads) in a separate thread.
+
+Mon Dec 19 10:19:06 GMT 2011  Olly Betts <olly@survex.com>
+
+	* configure.ac: Improve description of PERL_SO.
+
+Mon Dec 19 10:18:36 GMT 2011  Olly Betts <olly@survex.com>
+
+	* configure.ac: Fix cosmetic typo in recent Lua change.
+
+Mon Dec 19 10:11:30 GMT 2011  Olly Betts <olly@survex.com>
+
+	* configure.ac,lua/Makefile.am: Remove Lua cygwin-specific configure
+	  code and -DUSE_LUA_STUBS - both were copied from the Tcl support
+	  with Tcl changed to Lua, and have no basis in reality that I can
+	  find.
+
+Mon Dec 19 09:08:15 GMT 2011  Olly Betts <olly@survex.com>
+
+	* configure.ac,lua/Makefile.am: Improve probing for LUA_LIB, and also
+	  probe for LUA_SO so we support platforms where the compiled Lua
+	  module isn't called .so.
+
+Sun Dec 18 02:04:16 GMT 2011  Olly Betts <olly@survex.com>
+
+	* configure.ac: Improve LUA_LIB description and probe message - the
+	  module won't have an ".so" extension on all platforms.
+
+Sun Dec 18 01:55:39 GMT 2011  Olly Betts <olly@survex.com>
+
+	* configure.ac: m4 quoting tweaks (cosmetic only).
+
+Sun Dec 18 01:50:48 GMT 2011  Olly Betts <olly@survex.com>
+
+	* configure.ac: Honour LUA_LIB if already set.  Fixes #581.
+
+Thu Dec 15 14:44:09 GMT 2011  Olly Betts <olly@survex.com>
+
+	* perl/generate-perl-exceptions: Remove superfluous ';' after closing
+	  '}' of namespace.  Tweak whitespace.
+
+Thu Dec 15 12:50:42 GMT 2011  Olly Betts <olly@survex.com>
+
+	* generic/except.i: Correct comments about how and where this file gets
+	  included - this changed in the major restructuring a few months ago.
+	* generic/except.i,php/except.i,tcl8/except.i: Return
+	  Error::get_description() rather than get_type + ": " + get_msg().  In
+	  many cases this is the same, but if context or errno are available,
+	  get_description() includes them.  Catch and report std::exception
+	  rather than handling it as an unknown error (so in particular
+	  std::bad_alloc will now be reported more helpfully).
+
+Thu Dec 15 12:30:15 GMT 2011  Olly Betts <olly@survex.com>
+
+	* perl/generate-perl-exceptions: Whitespace tweak.
+
+Thu Dec 15 11:40:39 GMT 2011  Olly Betts <olly@survex.com>
+
+	* lua/docs/index.html,lua/generate-lua-exceptions,lua/smoketest.lua,
+	  lua/util.i: Handle an exception from C++ by raising a xapian.Error 
+	  object as an error in Lua.  Rename get_description() methods to
+	  __tostring(), so that you can use write tostring(obj) in Lua.  Fix
+	  indentation not to assume tabs are two spaces.
+
+Wed Dec 14 10:54:03 GMT 2011  Olly Betts <olly@survex.com>
+
+	* lua/generate-lua-exceptions: Restore other copyright holders to
+	  generated file - it seems likely this constitutes a derived work
+	  and it is better to err on the side of caution.
+
+Tue Dec 13 14:29:34 GMT 2011  Olly Betts <olly@survex.com>
+
+	* NEWS: Update from 1.2.8 and ChangeLog.
+
+Sun Oct 30 21:42:48 GMT 2011  Richard Boulton <richard@tartarus.org>
+
+	* python/Makefile.am: Add module_top.py to tarballs.
+
+Sat Oct 29 15:05:34 GMT 2011  Olly Betts <olly@survex.com>
+
+	* python/Makefile.am,python/module_top.py: Add a module docstring
+	  (fixes #573).
+
 Tue Oct 18 23:30:59 GMT 2011  Richard Boulton <richard@tartarus.org>
 
 	* xapian-headers.i: Ignore the

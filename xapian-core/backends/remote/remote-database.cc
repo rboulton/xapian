@@ -27,19 +27,19 @@
 #include <signal.h>
 
 #include "autoptr.h"
-#include "emptypostlist.h"
-#include "inmemory_positionlist.h"
+#include "api/emptypostlist.h"
+#include "backends/inmemory/inmemory_positionlist.h"
 #include "net_postlist.h"
 #include "net_termlist.h"
 #include "noreturn.h"
 #include "remote-document.h"
 #include "omassert.h"
 #include "realtime.h"
-#include "serialise.h"
+#include "net/serialise.h"
 #include "serialise-double.h"
 #include "str.h"
 #include "stringutils.h" // For STRINGIZE().
-#include "weightinternal.h"
+#include "weight/weightinternal.h"
 
 #include <string>
 #include <vector>
