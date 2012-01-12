@@ -32,7 +32,7 @@ using namespace std;
 string
 LatLongDistanceKeyMaker::operator()(const Document &doc) const
 {
-    string val(doc.get_value(valno));
+    string val(doc.get_value(slot));
     LatLongCoords doccoords;
     doccoords.unserialise(val);
     if (doccoords.empty()) {

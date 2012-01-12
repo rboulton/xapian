@@ -497,7 +497,7 @@ class XAPIAN_VISIBILITY_DEFAULT LatLongDistancePostingSource : public ValuePosti
 class XAPIAN_VISIBILITY_DEFAULT LatLongDistanceKeyMaker : public KeyMaker {
 
     /// The value slot to read.
-    Xapian::valueno valno;
+    Xapian::valueno slot;
 
     /// The centre point (or points) for distance calculation.
     LatLongCoords centre;
@@ -509,21 +509,21 @@ class XAPIAN_VISIBILITY_DEFAULT LatLongDistanceKeyMaker : public KeyMaker {
     std::string defkey;
 
   public:
-    LatLongDistanceKeyMaker(Xapian::valueno valno_,
+    LatLongDistanceKeyMaker(Xapian::valueno slot_,
 			    const LatLongCoords & centre_,
 			    const LatLongMetric & metric_,
 			    double defdistance = 10E10)
-	    : valno(valno_),
+	    : slot(slot_),
 	      centre(centre_),
 	      metric(metric_.clone()),
 	      defkey(sortable_serialise(defdistance))
     {}
 
-    LatLongDistanceKeyMaker(Xapian::valueno valno_,
+    LatLongDistanceKeyMaker(Xapian::valueno slot_,
 			    const LatLongCoord & centre_,
 			    const LatLongMetric & metric_,
 			    double defdistance = 10E10)
-	    : valno(valno_),
+	    : slot(slot_),
 	      centre(),
 	      metric(metric_.clone()),
 	      defkey(sortable_serialise(defdistance))

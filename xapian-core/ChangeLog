@@ -1,3 +1,8 @@
+Thu Jan 12 22:18:05 GMT 2012  Olly Betts <olly@survex.com>
+
+	* geospatial/latlong_distance_keymaker.cc,include/xapian/geospatial.h:
+	  Rename “valno” member to “slot”.
+
 Thu Jan 12 21:27:06 GMT 2012  Olly Betts <olly@survex.com>
 
 	* geospatial/latlong_posting_source.cc,geospatial/latlongcoord.cc:
