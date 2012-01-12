@@ -1,3 +1,9 @@
+Thu Jan 12 22:31:57 GMT 2012  Olly Betts <olly@survex.com>
+
+	* geospatial/latlong_distance_keymaker.cc: Check if the value string
+	  is empty, rather than decoding to a LatLongCoords and then checking
+	  that.
+
 Thu Jan 12 22:18:05 GMT 2012  Olly Betts <olly@survex.com>
 
 	* geospatial/latlong_distance_keymaker.cc,include/xapian/geospatial.h:
