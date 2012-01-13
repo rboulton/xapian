@@ -116,7 +116,7 @@ struct XAPIAN_VISIBILITY_DEFAULT LatLongCoord {
      *  to point to the end of the data representing the coordinate.
      *  @param end A pointer to the end of the string.
      *
-     *  @exception Xapian::SerialisationError if the string does not contain
+     *  @exception Xapian::SerialisationError if the string does not start with
      *  a valid serialised latitude-longitude pair.
      */
     void unserialise(const char ** ptr, const char * end);
@@ -361,7 +361,7 @@ class XAPIAN_VISIBILITY_DEFAULT GreatCircleMetric : public LatLongMetric {
 
     /** Construct a GreatCircleMetric using a specified radius.
      *
-     *  This is useful for data sets on which the points are not on Earth (eg,
+     *  This is useful for data sets in which the points are not on Earth (eg,
      *  a database of features on Mars).
      *
      *  @param radius_ The radius of the sphere to use, in metres.
