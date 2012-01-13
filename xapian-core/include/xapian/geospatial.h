@@ -384,15 +384,16 @@ class XAPIAN_VISIBILITY_DEFAULT GreatCircleMetric : public LatLongMetric {
  *  Results are weighted by the distance from a fixed point, or list of points,
  *  calculated according to the metric supplied.  If multiple points are
  *  supplied (either in the constructor, or in the coordinates stored in a
- *  document), the closest pointwise distance is returned.
+ *  document), the closest pointwise distance is used.
  *
  *  Documents further away than a specified maximum range (or with no location
  *  stored in the specified slot) will not be returned.
  *
- *  The weight returned will be computed from the distance using the formula:
- *  k1 * (distance + k1) ** (- k2)
+ *  The weight returned is computed from the distance using the formula:
  *
- *  (Where k1 and k2 are (strictly) positive, floating point, constants, and
+ *  k1 * pow(distance + k1, -k2)
+ *
+ *  (Where k1 and k2 are (strictly) positive, floating point constants, which
  *  default to 1000 and 1, respectively.  Distance is measured in metres, so
  *  this means that something at the centre gets a weight of 1.0, something 1km
  *  away gets a weight of 0.5, and something 3km away gets a weight of 0.25,
@@ -475,10 +476,10 @@ class XAPIAN_VISIBILITY_DEFAULT LatLongDistancePostingSource : public ValuePosti
  *  Results are ordered by the distance from a fixed point, or list of points,
  *  calculated according to the metric supplied.  If multiple points are
  *  supplied (either in the constructor, or in the coordinates stored in a
- *  document), the closest pointwise distance is returned.
+ *  document), the closest pointwise distance is used.
  *
  *  If a document contains no coordinate stored in the specified slot, a
- *  special value for the distance will be returned.  This defaults to a large
+ *  special value for the distance will be used.  This defaults to a large
  *  number, so that such results get a low rank, but may be specified by a
  *  constructor parameter.
  */

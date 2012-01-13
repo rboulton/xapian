@@ -1,3 +1,7 @@
+Fri Jan 13 11:52:53 GMT 2012  Olly Betts <olly@survex.com>
+
+	* include/xapian/geospatial.h: Documentation comment tweaks.
+
 Fri Jan 13 11:41:24 GMT 2012  Olly Betts <olly@survex.com>
 
 	* include/xapian/geospatial.h: In LatLongDistanceKeyMaker, rather than
