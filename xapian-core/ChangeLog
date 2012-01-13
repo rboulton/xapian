@@ -1,3 +1,8 @@
+Fri Jan 13 05:37:18 GMT 2012  Olly Betts <olly@survex.com>
+
+	* tests/api_geospatial.cc: Don't skip latlongpostingsource1 for chert
+	  - contrary to the comment, chert supports this testcase fine.
+
 Fri Jan 13 05:36:55 GMT 2012  Olly Betts <olly@survex.com>
 
 	* tests/api_geospatial.cc: Doesn't use <iomanip>.

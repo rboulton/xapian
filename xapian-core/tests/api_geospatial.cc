@@ -63,9 +63,6 @@ DEFINE_TESTCASE(latlongpostingsource1, backend && writable && !remote && !inmemo
     Xapian::LatLongCoord coord2(20, 10);
     Xapian::LatLongCoord coord3(30, 10);
 
-    // Chert doesn't currently support opening a value iterator for a writable database.
-    SKIP_TEST_FOR_BACKEND("chert");
-
     Xapian::GreatCircleMetric metric;
     Xapian::LatLongCoords centre;
     centre.append(coord1);
