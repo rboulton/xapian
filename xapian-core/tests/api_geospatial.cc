@@ -29,7 +29,6 @@
 #include "apitest.h"
 #include "testsuite.h"
 #include "testutils.h"
-#include <iomanip>
 
 using namespace std;
 using namespace Xapian;

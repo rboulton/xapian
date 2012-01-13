@@ -1,3 +1,7 @@
+Fri Jan 13 05:36:55 GMT 2012  Olly Betts <olly@survex.com>
+
+	* tests/api_geospatial.cc: Doesn't use <iomanip>.
+
 Fri Jan 13 05:28:11 GMT 2012  Olly Betts <olly@survex.com>
 
 	* include/xapian/geospatial.h: Fix LatLongCoord::operator<() so that
