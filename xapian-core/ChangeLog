@@ -1,3 +1,8 @@
+Fri Jan 13 11:04:14 GMT 2012  Olly Betts <olly@survex.com>
+
+	* include/xapian/geospatial.h: Convert descriptions of exceptions to
+	  use doxygen @exception.
+
 Fri Jan 13 05:48:29 GMT 2012  Olly Betts <olly@survex.com>
 
 	* tests/api_geospatial.cc: Doesn't use <xapian/error.h>.

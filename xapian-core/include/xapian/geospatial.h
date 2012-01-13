@@ -87,8 +87,6 @@ struct XAPIAN_VISIBILITY_DEFAULT LatLongCoord {
 
     /** Construct a coordinate.
      *
-     *  If the supplied latitude is out of range, an exception will be raised.
-     *
      *  If the supplied longitude is out of the standard range, it will be
      *  normalised to the range 0 <= longitude < 360.
      *
@@ -96,6 +94,8 @@ struct XAPIAN_VISIBILITY_DEFAULT LatLongCoord {
      *  are already in range), you can use the alternate constructor to
      *  construct an uninitialised coordinate, and then set the latitude and
      *  longitude directly.
+     *
+     *  @exception InvalidArgumentError the supplied latitude is out of range.
      */
     LatLongCoord(double latitude_, double longitude_);
 
@@ -268,7 +268,7 @@ class XAPIAN_VISIBILITY_DEFAULT LatLongMetric {
      *  The distance between the coordinate lists is defined to be the minimum
      *  pairwise distance between coordinates in the lists.
      *
-     *  If either of the lists is empty, an InvalidArgumentError will be raised.
+     *  @exception InvalidArgumentError either of the lists is empty.
      *
      *  @param a The first coordinate list.
      *  @param b The second coordinate list.
@@ -282,7 +282,7 @@ class XAPIAN_VISIBILITY_DEFAULT LatLongMetric {
      *  The distance between the coordinate lists is defined to be the minimum
      *  pairwise distance between coordinates in the lists.
      *
-     *  If either of the lists is empty, an InvalidArgumentError will be raised.
+     *  @exception InvalidArgumentError either of the lists is empty.
      *
      *  @param a The first coordinate list.
      *  @param b The second coordinate list, in serialised form.
@@ -299,7 +299,7 @@ class XAPIAN_VISIBILITY_DEFAULT LatLongMetric {
      *  The distance between the coordinate lists is defined to be the minimum
      *  pairwise distance between coordinates in the lists.
      *
-     *  If either of the lists is empty, an InvalidArgumentError will be raised.
+     *  @exception InvalidArgumentError either of the lists is empty.
      *
      *  @param a The first coordinate list.
      *  @param b_ptr The start of the serialised form of the second coordinate
