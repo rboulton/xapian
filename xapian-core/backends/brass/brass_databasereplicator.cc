@@ -2,7 +2,7 @@
  * @brief Support for brass database replication
  */
 /* Copyright 2008 Lemur Consulting Ltd
- * Copyright 2009,2010 Olly Betts
+ * Copyright 2009,2010,2011,2012 Olly Betts
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License as
@@ -32,14 +32,15 @@
 #include "brass_types.h"
 #include "brass_version.h"
 #include "debuglog.h"
+#include "fd.h"
+#include "filetests.h"
 #include "io_utils.h"
 #include "pack.h"
-#include "remoteconnection.h"
+#include "net/remoteconnection.h"
 #include "replicationprotocol.h"
 #include "safeerrno.h"
 #include "str.h"
 #include "stringutils.h"
-#include "utils.h"
 
 #ifdef __WIN32__
 # include "msvc_posix_wrapper.h"
@@ -123,7 +124,7 @@ BrassDatabaseReplicator::process_changeset_chunk_base(const string & tablename,
 	throw DatabaseError(msg, errno);
     }
     {
-	fdcloser closer(fd);
+	FD closer(fd);
 
 	io_write(fd, buf.data(), base_size);
 	io_sync(fd);
@@ -139,7 +140,7 @@ BrassDatabaseReplicator::process_changeset_chunk_base(const string & tablename,
 	// file still exists, which we do by calling unlink(), since we want
 	// to remove the temporary file anyway.
 	int saved_errno = errno;
-	if (unlink(tmp_path) == 0 || errno != ENOENT) {
+	if (unlink(tmp_path.c_str()) == 0 || errno != ENOENT) {
 	    string msg("Couldn't update base file ");
 	    msg += tablename;
 	    msg += ".base";
@@ -189,7 +190,7 @@ BrassDatabaseReplicator::process_changeset_chunk_blocks(const string & tablename
 	}
     }
     {
-	fdcloser closer(fd);
+	FD closer(fd);
 
 	while (true) {
 	    conn.get_message_chunk(buf, REASONABLE_CHANGESET_SIZE, end_time);

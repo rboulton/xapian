@@ -1,7 +1,7 @@
 /** @file postingsource.h
  *  @brief External sources of posting information
  */
-/* Copyright (C) 2007,2008,2009,2010 Olly Betts
+/* Copyright (C) 2007,2008,2009,2010,2011 Olly Betts
  * Copyright (C) 2008,2009 Lemur Consulting Ltd
  *
  * This program is free software; you can redistribute it and/or modify
@@ -73,8 +73,10 @@ class XAPIAN_VISIBILITY_DEFAULT PostingSource {
      *
      *  If you don't call this method, the upper bound will default to 0, for
      *  convenience when implementing "weight-less" PostingSource subclasses.
+     *
+     *  @param max_weight	The upper bound to set.
      */
-    void set_maxweight(Xapian::weight max_weight);
+    void set_maxweight(double max_weight);
 
   public:
     /** @private @internal Set the object to inform of maxweight changes.
@@ -114,7 +116,7 @@ class XAPIAN_VISIBILITY_DEFAULT PostingSource {
     virtual Xapian::doccount get_termfreq_max() const = 0;
 
     /// Return the currently set upper bound on what get_weight() can return.
-    Xapian::weight get_maxweight() const { return max_weight_; }
+    double get_maxweight() const { return max_weight_; }
 
     /** Return the weight contribution for the current document.
      *
@@ -129,7 +131,7 @@ class XAPIAN_VISIBILITY_DEFAULT PostingSource {
      *  next(), skip_to() or check(), and will ensure that the PostingSource is
      *  not at the end by calling at_end()).
      */
-    virtual Xapian::weight get_weight() const;
+    virtual double get_weight() const;
 
     /** Return the current docid.
      *
@@ -154,7 +156,7 @@ class XAPIAN_VISIBILITY_DEFAULT PostingSource {
      *  @param min_wt	The minimum weight contribution that is needed (this is
      *			just a hint which subclasses may ignore).
      */
-    virtual void next(Xapian::weight min_wt) = 0;
+    virtual void next(double min_wt) = 0;
 
     /** Advance to the specified docid.
      *
@@ -179,10 +181,11 @@ class XAPIAN_VISIBILITY_DEFAULT PostingSource {
      *  the docid in the single subdatabase relevant to this posting source.
      *  See the @a init() method for details.
      *
+     *  @param did	The document id to advance to.
      *  @param min_wt	The minimum weight contribution that is needed (this is
      *			just a hint which subclasses may ignore).
      */
-    virtual void skip_to(Xapian::docid did, Xapian::weight min_wt);
+    virtual void skip_to(Xapian::docid did, double min_wt);
 
     /** Check if the specified docid occurs.
      *
@@ -214,8 +217,12 @@ class XAPIAN_VISIBILITY_DEFAULT PostingSource {
      *  Note: in the case of a multi-database search, the docid specified is
      *  the docid in the single subdatabase relevant to this posting source.
      *  See the @a init() method for details.
+     *
+     *  @param did	The document id to check.
+     *  @param min_wt	The minimum weight contribution that is needed (this is
+     *			just a hint which subclasses may ignore).
      */
-    virtual bool check(Xapian::docid did, Xapian::weight min_wt);
+    virtual bool check(Xapian::docid did, double min_wt);
 
     /** Return true if the current position is past the last entry in this list.
      *
@@ -391,9 +398,9 @@ class XAPIAN_VISIBILITY_DEFAULT ValuePostingSource : public PostingSource {
     Xapian::doccount get_termfreq_est() const;
     Xapian::doccount get_termfreq_max() const;
 
-    void next(Xapian::weight min_wt);
-    void skip_to(Xapian::docid min_docid, Xapian::weight min_wt);
-    bool check(Xapian::docid min_docid, Xapian::weight min_wt);
+    void next(double min_wt);
+    void skip_to(Xapian::docid min_docid, double min_wt);
+    bool check(Xapian::docid min_docid, double min_wt);
 
     bool at_end() const;
 
@@ -430,7 +437,7 @@ class XAPIAN_VISIBILITY_DEFAULT ValueWeightPostingSource
      */
     ValueWeightPostingSource(Xapian::valueno slot_);
 
-    Xapian::weight get_weight() const;
+    double get_weight() const;
     ValueWeightPostingSource * clone() const;
     std::string name() const;
     std::string serialise() const;
@@ -471,23 +478,23 @@ class XAPIAN_VISIBILITY_DEFAULT DecreasingValueWeightPostingSource
     bool items_at_end;
 
     /// Skip the iterator forward if in the decreasing range, and weight is low.
-    void skip_if_in_range(Xapian::weight min_wt);
+    void skip_if_in_range(double min_wt);
 
   public:
     DecreasingValueWeightPostingSource(Xapian::valueno slot_,
 				       Xapian::docid range_start_ = 0,
 				       Xapian::docid range_end_ = 0);
 
-    Xapian::weight get_weight() const;
+    double get_weight() const;
     DecreasingValueWeightPostingSource * clone() const;
     std::string name() const;
     std::string serialise() const;
     DecreasingValueWeightPostingSource * unserialise(const std::string &s) const;
     void init(const Xapian::Database & db_);
 
-    void next(Xapian::weight min_wt);
-    void skip_to(Xapian::docid min_docid, Xapian::weight min_wt);
-    bool check(Xapian::docid min_docid, Xapian::weight min_wt);
+    void next(double min_wt);
+    void skip_to(Xapian::docid min_docid, double min_wt);
+    bool check(Xapian::docid min_docid, double min_wt);
 
     std::string get_description() const;
 };
@@ -522,17 +529,20 @@ class XAPIAN_VISIBILITY_DEFAULT ValueMapPostingSource
     /** Add a mapping.
      *
      *  @param key The key looked up from the value slot.
-     *  @param weight The weight to give this key.
+     *  @param wt The weight to give this key.
      */
     void add_mapping(const std::string &key, double wt);
 
     /** Clear all mappings. */
     void clear_mappings();
 
-    /** Set a default weight for document values not in the map. */
+    /** Set a default weight for document values not in the map.
+     *
+     *  @param wt The weight to set as the default.
+     */
     void set_default_weight(double wt);
 
-    Xapian::weight get_weight() const;
+    double get_weight() const;
     ValueMapPostingSource * clone() const;
     std::string name() const;
     std::string serialise() const;
@@ -569,17 +579,17 @@ class XAPIAN_VISIBILITY_DEFAULT FixedWeightPostingSource : public PostingSource 
      *
      *  @param wt The fixed weight to return.
      */
-    FixedWeightPostingSource(Xapian::weight wt);
+    FixedWeightPostingSource(double wt);
 
     Xapian::doccount get_termfreq_min() const;
     Xapian::doccount get_termfreq_est() const;
     Xapian::doccount get_termfreq_max() const;
 
-    Xapian::weight get_weight() const;
+    double get_weight() const;
 
-    void next(Xapian::weight min_wt);
-    void skip_to(Xapian::docid min_docid, Xapian::weight min_wt);
-    bool check(Xapian::docid min_docid, Xapian::weight min_wt);
+    void next(double min_wt);
+    void skip_to(Xapian::docid min_docid, double min_wt);
+    bool check(Xapian::docid min_docid, double min_wt);
 
     bool at_end() const;
 

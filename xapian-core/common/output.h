@@ -1,5 +1,5 @@
-/** \file output.h
- * \brief Functions for output of strings describing Xapian objects.
+/** @file output.h
+ * @brief Functions for output of strings describing Xapian objects.
  */
 /*
  * Copyright 1999,2000,2001 BrightStation PLC
@@ -79,13 +79,5 @@ XAPIAN_OUTPUT_FUNCTION(Xapian::MatchSpy)
 
 #include <xapian/postingsource.h>
 XAPIAN_OUTPUT_FUNCTION(Xapian::PostingSource)
-
-#include "replication.h"
-XAPIAN_OUTPUT_FUNCTION(Xapian::DatabaseMaster)
-XAPIAN_OUTPUT_FUNCTION(Xapian::DatabaseReplica)
-
-#include "weightinternal.h"
-XAPIAN_OUTPUT_FUNCTION(TermFreqs)
-XAPIAN_OUTPUT_FUNCTION(Xapian::Weight::Internal)
 
 #endif /* XAPIAN_INCLUDED_OUTPUT_H */

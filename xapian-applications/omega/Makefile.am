@@ -80,8 +80,11 @@ dist_pkglibbin_SCRIPTS = outlookmsg2html
 bin_PROGRAMS = omindex scriptindex
 dist_bin_SCRIPTS = dbi2omega htdig2omega mbox2omega
 
-check_PROGRAMS = htmlparsetest md5test utf8converttest
-TESTS = htmlparsetest$(EXEEXT) md5test$(EXEEXT) utf8converttest$(EXEEXT)
+check_PROGRAMS = htmlparsetest md5test urlenctest utf8converttest
+TESTS =	htmlparsetest$(EXEEXT)\
+	md5test$(EXEEXT)\
+	urlenctest$(EXEEXT)\
+	utf8converttest$(EXEEXT)
 
 omegadatadir = $(datadir)/omega
 dist_omegadata_DATA = htdig2omega.script mbox2omega.script
@@ -94,7 +97,7 @@ noinst_HEADERS = omega.h query.h cgiparam.h\
  md5.h md5wrap.h xmlparse.h metaxmlparse.h values.h utf8convert.h\
  namedentities.h pkglibbindir.h datematchdecider.h sample.h strcasecmp.h\
  utf8truncate.h diritor.h runfilter.h freemem.h xpsxmlparse.h transform.h\
- weight.h svgparse.h tmpdir.h urlencode.h unixperm.h
+ weight.h svgparse.h tmpdir.h urldecode.h urlencode.h unixperm.h
 
 # headers maintained in xapian-core
 noinst_HEADERS +=\
@@ -154,6 +157,8 @@ md5test_SOURCES = md5test.cc md5wrap.cc md5.cc
 
 utf8converttest_SOURCES = utf8converttest.cc utf8convert.cc
 utf8converttest_LDADD = $(XAPIAN_LIBS)
+
+urlenctest_SOURCES = urlenctest.cc urlencode.cc
 
 if !MAINTAINER_NO_DOCS
 dist_man_MANS = omindex.1 scriptindex.1

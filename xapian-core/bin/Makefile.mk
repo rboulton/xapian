@@ -2,6 +2,9 @@ EXTRA_DIST +=\
 	bin/dir_contents\
 	bin/Makefile
 
+bin_PROGRAMS +=\
+	bin/xapian-delve
+
 if BUILD_BACKEND_BRASS_OR_CHERT
 bin_PROGRAMS +=\
 	bin/xapian-check\
@@ -14,6 +17,7 @@ if !MAINTAINER_NO_DOCS
 dist_man_MANS +=\
 	bin/xapian-check.1\
 	bin/xapian-compact.1\
+	bin/xapian-delve.1\
 	bin/xapian-inspect.1\
 	bin/xapian-replicate.1\
 	bin/xapian-replicate-server.1
@@ -36,7 +40,7 @@ bin_xapian_check_CPPFLAGS =\
 	-I$(top_srcdir)/backends/brass\
 	-I$(top_srcdir)/backends/chert
 bin_xapian_check_SOURCES = bin/xapian-check.cc
-bin_xapian_check_LDADD = $(ldflags) $(libxapian_la)
+bin_xapian_check_LDADD = $(ldflags)
 if BUILD_BACKEND_BRASS
 bin_xapian_check_SOURCES += bin/xapian-check-brass.cc bin/xapian-check-brass.h
 bin_xapian_check_LDADD += libbrasscheck.la
@@ -45,9 +49,13 @@ if BUILD_BACKEND_CHERT
 bin_xapian_check_SOURCES += bin/xapian-check-chert.cc bin/xapian-check-chert.h
 bin_xapian_check_LDADD += libchertcheck.la
 endif
+bin_xapian_check_LDADD += $(libxapian_la)
 
 bin_xapian_compact_SOURCES = bin/xapian-compact.cc
 bin_xapian_compact_LDADD = $(ldflags) libgetopt.la $(libxapian_la)
+
+bin_xapian_delve_SOURCES = bin/xapian-delve.cc
+bin_xapian_delve_LDADD = $(ldflags) libgetopt.la $(libxapian_la)
 
 bin_xapian_inspect_CPPFLAGS = -I$(top_srcdir)/backends/chert
 bin_xapian_inspect_SOURCES = bin/xapian-inspect.cc
@@ -71,6 +79,9 @@ bin/xapian-check.1: bin/xapian-check$(EXEEXT) makemanpage
 
 bin/xapian-compact.1: bin/xapian-compact$(EXEEXT) makemanpage
 	./makemanpage bin/xapian-compact $(srcdir)/bin/xapian-compact.cc bin/xapian-compact.1
+
+bin/xapian-delve.1: bin/xapian-delve$(EXEEXT) makemanpage
+	./makemanpage bin/xapian-delve $(srcdir)/bin/xapian-delve.cc bin/xapian-delve.1
 
 bin/xapian-inspect.1: bin/xapian-inspect$(EXEEXT) makemanpage
 	./makemanpage bin/xapian-inspect $(srcdir)/bin/xapian-inspect.cc bin/xapian-inspect.1

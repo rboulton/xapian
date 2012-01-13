@@ -12,6 +12,7 @@ noinst_HEADERS +=\
 	matcher/msetcmp.h\
 	matcher/msetpostlist.h\
 	matcher/multiandpostlist.h\
+	matcher/multimatch.h\
 	matcher/multixorpostlist.h\
 	matcher/orpostlist.h\
 	matcher/phrasepostlist.h\
@@ -52,7 +53,6 @@ lib_src +=\
 	matcher/multixorpostlist.cc\
 	matcher/orpostlist.cc\
 	matcher/phrasepostlist.cc\
-	matcher/queryoptimiser.cc\
 	matcher/selectpostlist.cc\
 	matcher/synonympostlist.cc\
 	matcher/valuegepostlist.cc\

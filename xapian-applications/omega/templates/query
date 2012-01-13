@@ -102,11 +102,11 @@ $if{$field{size},<span title="$html{$field{size}} bytes">Size: <b>$html{$filesiz
 </div>
 </div>
 </td>
-<td><B><A HREF="$html{$field{url}}">$html{$or{$field{caption},$field{title},$field{url},Untitled}}</A></B><BR>
+<td><B><A HREF="$html{$field{url}}">$html{$or{$field{caption},$field{title},$prettyurl{$field{url}},Untitled}}</A></B><BR>
 <small>$highlight{$field{sample},$terms}$if{$field{sample},...}</small><br>
 <A HREF="$html{$field{url}}">$html{$field{url}}</A><br>
 <small>
-$percentage% relevant$. matching:
+matching:
 <i>$list{$map{$terms,$html{$prettyterm{$_}}},$. ,</i> and <i>}</i></small>${for lynx:}<p></td></tr>}
 </table>
 
