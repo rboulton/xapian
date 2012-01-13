@@ -1,3 +1,8 @@
+Fri Jan 13 05:45:59 GMT 2012  Olly Betts <olly@survex.com>
+
+	* include/xapian/geospatial.h: Rearrange order of classes to avoid the
+	  need to forward declare LatLongCoordsIterator.
+
 Fri Jan 13 05:37:18 GMT 2012  Olly Betts <olly@survex.com>
 
 	* tests/api_geospatial.cc: Don't skip latlongpostingsource1 for chert
