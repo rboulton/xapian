@@ -41,7 +41,7 @@ class Registry;
 
 /** Convert from miles to metres.
  */
-inline XAPIAN_VISIBILITY_DEFAULT double
+inline double
 miles_to_metres(double miles)
 {
     return 1609.344 * miles;
@@ -49,7 +49,7 @@ miles_to_metres(double miles)
 
 /** Convert from metres to miles.
  */
-inline XAPIAN_VISIBILITY_DEFAULT double
+inline double
 metres_to_miles(double metres)
 {
     return metres * (1.0 / 1609.344);
