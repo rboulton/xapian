@@ -500,7 +500,7 @@ class XAPIAN_VISIBILITY_DEFAULT LatLongDistanceKeyMaker : public KeyMaker {
     LatLongDistanceKeyMaker(Xapian::valueno slot_,
 			    const LatLongCoords & centre_,
 			    const LatLongMetric & metric_,
-			    double defdistance = 10E10)
+			    double defdistance)
 	    : slot(slot_),
 	      centre(centre_),
 	      metric(metric_.clone()),
@@ -508,13 +508,33 @@ class XAPIAN_VISIBILITY_DEFAULT LatLongDistanceKeyMaker : public KeyMaker {
     {}
 
     LatLongDistanceKeyMaker(Xapian::valueno slot_,
+			    const LatLongCoords & centre_,
+			    const LatLongMetric & metric_)
+	    : slot(slot_),
+	      centre(centre_),
+	      metric(metric_.clone()),
+	      defkey(9, '\xff')
+    {}
+
+    LatLongDistanceKeyMaker(Xapian::valueno slot_,
 			    const LatLongCoord & centre_,
 			    const LatLongMetric & metric_,
-			    double defdistance = 10E10)
+			    double defdistance)
 	    : slot(slot_),
 	      centre(),
 	      metric(metric_.clone()),
 	      defkey(sortable_serialise(defdistance))
+    {
+	centre.append(centre_);
+    }
+
+    LatLongDistanceKeyMaker(Xapian::valueno slot_,
+			    const LatLongCoord & centre_,
+			    const LatLongMetric & metric_)
+	    : slot(slot_),
+	      centre(),
+	      metric(metric_.clone()),
+	      defkey(9, '\xff')
     {
 	centre.append(centre_);
     }
