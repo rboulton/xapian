@@ -419,12 +419,7 @@ class XAPIAN_VISIBILITY_DEFAULT LatLongDistancePostingSource : public ValuePosti
     /// Constant used in weighting function.
     double k2;
 
-    /** Calculate the distance for the current document.
-     *
-     *  Returns true if the distance was calculated ok, or false if the
-     *  document didn't contain a valid serialised sequence of coordinates in
-     *  the appropriate value slot.
-     */
+    /// Calculate the distance for the current document.
     void calc_distance();
 
     /// Internal constructor; used by clone() and serialise().

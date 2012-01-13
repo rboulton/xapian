@@ -1,3 +1,9 @@
+Fri Jan 13 12:27:38 GMT 2012  Olly Betts <olly@survex.com>
+
+	* include/xapian/geospatial.h: Fix documentation comment for internal
+	  helper LatLongDistancePostingSource::calc_distance() to not talk
+	  about non-existent return value.
+
 Fri Jan 13 12:01:06 GMT 2012  Olly Betts <olly@survex.com>
 
 	* tests/api_geospatial.cc: Include <xapian.h> rather than
