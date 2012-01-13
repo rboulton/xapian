@@ -131,6 +131,7 @@ struct XAPIAN_VISIBILITY_DEFAULT LatLongCoord {
     bool operator<(const LatLongCoord & other) const
     {
 	if (latitude < other.latitude) return true;
+	if (latitude > other.latitude) return false;
 	return (longitude < other.longitude);
     }
 

@@ -1,3 +1,10 @@
+Fri Jan 13 05:28:11 GMT 2012  Olly Betts <olly@survex.com>
+
+	* include/xapian/geospatial.h: Fix LatLongCoord::operator<() so that
+	  a<b and b<a can't both be true.
+	* tests/api_geospatial.cc: Extend latlongcoords1 to provide a
+	  regression test for this.
+
 Thu Jan 12 22:31:57 GMT 2012  Olly Betts <olly@survex.com>
 
 	* geospatial/latlong_distance_keymaker.cc: Check if the value string

@@ -3,6 +3,7 @@
  */
 /* Copyright 2008 Lemur Consulting Ltd
  * Copyright 2010,2011 Richard Boulton
+ * Copyright 2012 Olly Betts
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License as
@@ -178,16 +179,22 @@ DEFINE_TESTCASE(latlongcoords1, !backend) {
     LatLongCoord c1(0, 0);
     LatLongCoord c2(1, 0);
     LatLongCoord c3(1, 0);
+    LatLongCoord c4(0, 1);
 
     // Test comparison
     TEST_NOT_EQUAL(c1.get_description(), c2.get_description());
-    TEST(c1 < c2 || c2 < c1);
+    // Exactly one of these inequalities should be true.
+    TEST((c1 < c2) ^ (c2 < c1));
     TEST_EQUAL(c2.get_description(), c3.get_description());
     TEST(!(c2 < c3) && !(c3 < c2));
+    TEST_NOT_EQUAL(c3.get_description(), c4.get_description());
+    // Exactly one of these inequalities should be true.  This is a regression
+    // test for bug found prior to 1.3.0.
+    TEST((c3 < c4) ^ (c4 < c3));
 
     // Test serialisation
     std::string s1 = c1.serialise();
-    LatLongCoord c4, c5;
+    LatLongCoord c5;
     c4.unserialise(s1);
     TEST(!(c1 < c4 || c4 < c1));
     const char * ptr = s1.data();
