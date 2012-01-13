@@ -29,10 +29,9 @@
 #include <string>
 
 #include <xapian/derefwrapper.h>
-#include <xapian/enquire.h>
+#include <xapian/keymaker.h>
 #include <xapian/postingsource.h>
 #include <xapian/queryparser.h> // For sortable_serialise
-#include <xapian/keymaker.h>
 #include <xapian/visibility.h>
 
 namespace Xapian {
