@@ -1,3 +1,51 @@
+Wed Jan 18 00:37:07 GMT 2012  Olly Betts <olly@survex.com>
+
+	* geospatial/latlong_posting_source.cc: Removed unused header
+	  inclusion.
+
+Fri Jan 13 12:28:13 GMT 2012  Olly Betts <olly@survex.com>
+
+	* include/xapian/geospatial.h: A couple more text tweaks in doxygen
+	  comments.
+
+Fri Jan 13 12:27:38 GMT 2012  Olly Betts <olly@survex.com>
+
+	* include/xapian/geospatial.h: Fix documentation comment for internal
+	  helper LatLongDistancePostingSource::calc_distance() to not talk
+	  about non-existent return value.
+
+Fri Jan 13 12:01:06 GMT 2012  Olly Betts <olly@survex.com>
+
+	* tests/api_geospatial.cc: Include <xapian.h> rather than
+	  <xapian/geospatial.h> - we're trying to test the public API, so
+	  including the public API header is better.
+
+Fri Jan 13 11:52:53 GMT 2012  Olly Betts <olly@survex.com>
+
+	* include/xapian/geospatial.h: Documentation comment tweaks.
+
+Fri Jan 13 11:41:24 GMT 2012  Olly Betts <olly@survex.com>
+
+	* include/xapian/geospatial.h: In LatLongDistanceKeyMaker, rather than
+	  defaulting the distance to the rather arbitrary 10E10, default the
+	  key to string(9, '\xff'), which is sortable_serialise(HUGE_VAL).
+
+Fri Jan 13 11:25:31 GMT 2012  Olly Betts <olly@survex.com>
+
+	* include/xapian/geospatial.h: Don't need <xapian/enquire.h> (probably
+	  left over from when there was a MatchDecider subclass here).  Sort
+	  remaining xapian headers into alphabetical order.
+
+Fri Jan 13 11:06:02 GMT 2012  Olly Betts <olly@survex.com>
+
+	* include/xapian/geospatial.h: Don't need XAPIAN_VISIBILITY_DEFAULT on
+	  inline functions.
+
+Fri Jan 13 11:04:14 GMT 2012  Olly Betts <olly@survex.com>
+
+	* include/xapian/geospatial.h: Convert descriptions of exceptions to
+	  use doxygen @exception.
+
 Fri Jan 13 05:48:29 GMT 2012  Olly Betts <olly@survex.com>
 
 	* tests/api_geospatial.cc: Doesn't use <xapian/error.h>.

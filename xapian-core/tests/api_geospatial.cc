@@ -23,7 +23,7 @@
 
 #include <config.h>
 #include "api_geospatial.h"
-#include <xapian/geospatial.h>
+#include <xapian.h>
 
 #include "apitest.h"
 #include "testsuite.h"

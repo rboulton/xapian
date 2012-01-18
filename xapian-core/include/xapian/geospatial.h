@@ -29,10 +29,9 @@
 #include <string>
 
 #include <xapian/derefwrapper.h>
-#include <xapian/enquire.h>
+#include <xapian/keymaker.h>
 #include <xapian/postingsource.h>
 #include <xapian/queryparser.h> // For sortable_serialise
-#include <xapian/keymaker.h>
 #include <xapian/visibility.h>
 
 namespace Xapian {
@@ -41,7 +40,7 @@ class Registry;
 
 /** Convert from miles to metres.
  */
-inline XAPIAN_VISIBILITY_DEFAULT double
+inline double
 miles_to_metres(double miles)
 {
     return 1609.344 * miles;
@@ -49,7 +48,7 @@ miles_to_metres(double miles)
 
 /** Convert from metres to miles.
  */
-inline XAPIAN_VISIBILITY_DEFAULT double
+inline double
 metres_to_miles(double metres)
 {
     return metres * (1.0 / 1609.344);
@@ -87,8 +86,6 @@ struct XAPIAN_VISIBILITY_DEFAULT LatLongCoord {
 
     /** Construct a coordinate.
      *
-     *  If the supplied latitude is out of range, an exception will be raised.
-     *
      *  If the supplied longitude is out of the standard range, it will be
      *  normalised to the range 0 <= longitude < 360.
      *
@@ -96,6 +93,8 @@ struct XAPIAN_VISIBILITY_DEFAULT LatLongCoord {
      *  are already in range), you can use the alternate constructor to
      *  construct an uninitialised coordinate, and then set the latitude and
      *  longitude directly.
+     *
+     *  @exception InvalidArgumentError the supplied latitude is out of range.
      */
     LatLongCoord(double latitude_, double longitude_);
 
@@ -117,7 +116,7 @@ struct XAPIAN_VISIBILITY_DEFAULT LatLongCoord {
      *  to point to the end of the data representing the coordinate.
      *  @param end A pointer to the end of the string.
      *
-     *  @exception Xapian::SerialisationError if the string does not contain
+     *  @exception Xapian::SerialisationError if the string does not start with
      *  a valid serialised latitude-longitude pair.
      */
     void unserialise(const char ** ptr, const char * end);
@@ -268,7 +267,7 @@ class XAPIAN_VISIBILITY_DEFAULT LatLongMetric {
      *  The distance between the coordinate lists is defined to be the minimum
      *  pairwise distance between coordinates in the lists.
      *
-     *  If either of the lists is empty, an InvalidArgumentError will be raised.
+     *  @exception InvalidArgumentError either of the lists is empty.
      *
      *  @param a The first coordinate list.
      *  @param b The second coordinate list.
@@ -282,7 +281,7 @@ class XAPIAN_VISIBILITY_DEFAULT LatLongMetric {
      *  The distance between the coordinate lists is defined to be the minimum
      *  pairwise distance between coordinates in the lists.
      *
-     *  If either of the lists is empty, an InvalidArgumentError will be raised.
+     *  @exception InvalidArgumentError either of the lists is empty.
      *
      *  @param a The first coordinate list.
      *  @param b The second coordinate list, in serialised form.
@@ -299,7 +298,7 @@ class XAPIAN_VISIBILITY_DEFAULT LatLongMetric {
      *  The distance between the coordinate lists is defined to be the minimum
      *  pairwise distance between coordinates in the lists.
      *
-     *  If either of the lists is empty, an InvalidArgumentError will be raised.
+     *  @exception InvalidArgumentError either of the lists is empty.
      *
      *  @param a The first coordinate list.
      *  @param b_ptr The start of the serialised form of the second coordinate
@@ -362,7 +361,7 @@ class XAPIAN_VISIBILITY_DEFAULT GreatCircleMetric : public LatLongMetric {
 
     /** Construct a GreatCircleMetric using a specified radius.
      *
-     *  This is useful for data sets on which the points are not on Earth (eg,
+     *  This is useful for data sets in which the points are not on Earth (eg,
      *  a database of features on Mars).
      *
      *  @param radius_ The radius of the sphere to use, in metres.
@@ -385,15 +384,16 @@ class XAPIAN_VISIBILITY_DEFAULT GreatCircleMetric : public LatLongMetric {
  *  Results are weighted by the distance from a fixed point, or list of points,
  *  calculated according to the metric supplied.  If multiple points are
  *  supplied (either in the constructor, or in the coordinates stored in a
- *  document), the closest pointwise distance is returned.
+ *  document), the closest pointwise distance is used.
  *
  *  Documents further away than a specified maximum range (or with no location
  *  stored in the specified slot) will not be returned.
  *
- *  The weight returned will be computed from the distance using the formula:
- *  k1 * (distance + k1) ** (- k2)
+ *  The weight returned is computed from the distance using the formula:
  *
- *  (Where k1 and k2 are (strictly) positive, floating point, constants, and
+ *  k1 * pow(distance + k1, -k2)
+ *
+ *  (Where k1 and k2 are (strictly) positive, floating point constants, which
  *  default to 1000 and 1, respectively.  Distance is measured in metres, so
  *  this means that something at the centre gets a weight of 1.0, something 1km
  *  away gets a weight of 0.5, and something 3km away gets a weight of 0.25,
@@ -419,12 +419,7 @@ class XAPIAN_VISIBILITY_DEFAULT LatLongDistancePostingSource : public ValuePosti
     /// Constant used in weighting function.
     double k2;
 
-    /** Calculate the distance for the current document.
-     *
-     *  Returns true if the distance was calculated ok, or false if the
-     *  document didn't contain a valid serialised sequence of coordinates in
-     *  the appropriate value slot.
-     */
+    /// Calculate the distance for the current document.
     void calc_distance();
 
     /// Internal constructor; used by clone() and serialise().
@@ -455,11 +450,11 @@ class XAPIAN_VISIBILITY_DEFAULT LatLongDistancePostingSource : public ValuePosti
 				 double k2_ = 1.0);
     ~LatLongDistancePostingSource();
 
-    void next(Xapian::weight min_wt);
-    void skip_to(Xapian::docid min_docid, Xapian::weight min_wt);
-    bool check(Xapian::docid min_docid, Xapian::weight min_wt);
+    void next(double min_wt);
+    void skip_to(Xapian::docid min_docid, double min_wt);
+    bool check(Xapian::docid min_docid, double min_wt);
 
-    Xapian::weight get_weight() const;
+    double get_weight() const;
     LatLongDistancePostingSource * clone() const;
     std::string name() const;
     std::string serialise() const;
@@ -476,10 +471,10 @@ class XAPIAN_VISIBILITY_DEFAULT LatLongDistancePostingSource : public ValuePosti
  *  Results are ordered by the distance from a fixed point, or list of points,
  *  calculated according to the metric supplied.  If multiple points are
  *  supplied (either in the constructor, or in the coordinates stored in a
- *  document), the closest pointwise distance is returned.
+ *  document), the closest pointwise distance is used.
  *
  *  If a document contains no coordinate stored in the specified slot, a
- *  special value for the distance will be returned.  This defaults to a large
+ *  special value for the distance will be used.  This defaults to a large
  *  number, so that such results get a low rank, but may be specified by a
  *  constructor parameter.
  */
@@ -501,7 +496,7 @@ class XAPIAN_VISIBILITY_DEFAULT LatLongDistanceKeyMaker : public KeyMaker {
     LatLongDistanceKeyMaker(Xapian::valueno slot_,
 			    const LatLongCoords & centre_,
 			    const LatLongMetric & metric_,
-			    double defdistance = 10E10)
+			    double defdistance)
 	    : slot(slot_),
 	      centre(centre_),
 	      metric(metric_.clone()),
@@ -509,13 +504,33 @@ class XAPIAN_VISIBILITY_DEFAULT LatLongDistanceKeyMaker : public KeyMaker {
     {}
 
     LatLongDistanceKeyMaker(Xapian::valueno slot_,
+			    const LatLongCoords & centre_,
+			    const LatLongMetric & metric_)
+	    : slot(slot_),
+	      centre(centre_),
+	      metric(metric_.clone()),
+	      defkey(9, '\xff')
+    {}
+
+    LatLongDistanceKeyMaker(Xapian::valueno slot_,
 			    const LatLongCoord & centre_,
 			    const LatLongMetric & metric_,
-			    double defdistance = 10E10)
+			    double defdistance)
 	    : slot(slot_),
 	      centre(),
 	      metric(metric_.clone()),
 	      defkey(sortable_serialise(defdistance))
+    {
+	centre.append(centre_);
+    }
+
+    LatLongDistanceKeyMaker(Xapian::valueno slot_,
+			    const LatLongCoord & centre_,
+			    const LatLongMetric & metric_)
+	    : slot(slot_),
+	      centre(),
+	      metric(metric_.clone()),
+	      defkey(9, '\xff')
     {
 	centre.append(centre_);
     }
