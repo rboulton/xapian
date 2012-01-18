@@ -1,7 +1,7 @@
 /** @file api_backend.cc
  * @brief Backend-related tests.
  */
-/* Copyright (C) 2008,2009,2010,2011 Olly Betts
+/* Copyright (C) 2008,2009,2010,2011,2012 Olly Betts
  * Copyright (C) 2010 Richard Boulton
  *
  * This program is free software; you can redistribute it and/or
@@ -30,10 +30,10 @@
 #include "str.h"
 #include "testsuite.h"
 #include "testutils.h"
-#include "utils.h"
 
 #include "apitest.h"
 
+#include "safesysstat.h"
 #include "safeunistd.h"
 
 using namespace std;
@@ -49,7 +49,7 @@ DEFINE_TESTCASE(lockfileumask1, brass || chert) {
 	path += "/flintlock";
 
 	struct stat statbuf;
-	TEST(stat(path, &statbuf) == 0);
+	TEST(stat(path.c_str(), &statbuf) == 0);
 	TEST_EQUAL(statbuf.st_mode & 0777, 0644);
     } catch (...) {
 	umask(old_umask);
@@ -721,7 +721,7 @@ DEFINE_TESTCASE(bm25weight2, backend) {
     enquire.set_weighting_scheme(Xapian::BM25Weight(0, 0, 0, 0, 1));
     Xapian::MSet mset = enquire.get_mset(0, 100);
     TEST_REL(mset.size(),>=,2);
-    Xapian::weight weight0 = mset[0].get_weight();
+    double weight0 = mset[0].get_weight();
     for (size_t i = 1; i != mset.size(); ++i) {
 	TEST_EQUAL(weight0, mset[i].get_weight());
     }
@@ -735,7 +735,7 @@ DEFINE_TESTCASE(tradweight2, backend) {
     enquire.set_weighting_scheme(Xapian::TradWeight(0));
     Xapian::MSet mset = enquire.get_mset(0, 100);
     TEST_REL(mset.size(),>=,2);
-    Xapian::weight weight0 = mset[0].get_weight();
+    double weight0 = mset[0].get_weight();
     for (size_t i = 1; i != mset.size(); ++i) {
 	TEST_EQUAL(weight0, mset[i].get_weight());
     }

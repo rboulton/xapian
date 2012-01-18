@@ -105,7 +105,7 @@ static void ensure_match();
 
 static Xapian::Query query;
 //static string url_query_string;
-Xapian::Query::op default_op = Xapian::Query::OP_OR; // default matching mode
+Xapian::Query::op default_op = Xapian::Query::OP_AND; // default matching mode
 
 static Xapian::QueryParser qp;
 static Xapian::NumberValueRangeProcessor * size_vrp = NULL;
@@ -819,7 +819,7 @@ static Fields fields;
 static Xapian::docid q0;
 static Xapian::doccount hit_no;
 static int percent;
-static Xapian::weight weight;
+static double weight;
 static Xapian::doccount collapsed;
 
 static string print_caption(const string &fmt, const vector<string> &param);
@@ -2097,14 +2097,6 @@ pretty_term(string term)
 
     // Assume unprefixed terms are unstemmed.
     if (!isupper(term[0])) return term;
-
-    // FIXME: keep this for now in case people are still generating 'R' terms?
-    // But if we assumed unprefixed terms are unstemmed, what use is this?
-    if (term[0] == 'R') {
-	term.erase(0, 1);
-	term[0] = toupper(static_cast<unsigned char>(term[0]));
-	return term;
-    }
 
     // Handle stemmed terms.
     bool stemmed = (term[0] == 'Z');

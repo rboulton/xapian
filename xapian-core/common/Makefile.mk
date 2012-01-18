@@ -4,6 +4,7 @@ noinst_HEADERS +=\
 	common/closefrom.h\
 	common/debuglog.h\
 	common/fd.h\
+	common/filetests.h\
 	common/fileutils.h\
 	common/gnu_getopt.h\
 	common/internaltypes.h\
@@ -36,8 +37,7 @@ noinst_HEADERS +=\
 	common/str.h\
 	common/stringutils.h\
 	common/submatch.h\
-	common/unaligned.h\
-	common/utils.h
+	common/unaligned.h
 
 EXTRA_DIST +=\
 	common/dir_contents\
@@ -53,13 +53,13 @@ lib_src +=\
 	common/io_utils.cc\
 	common/msvc_dirent.cc\
 	common/msvc_posix_wrapper.cc\
+	common/omassert.cc\
 	common/replicate_utils.cc\
 	common/safe.cc\
 	common/serialise-double.cc\
 	common/socket_utils.cc\
 	common/str.cc\
-	common/stringutils.cc\
-	common/utils.cc
+	common/stringutils.cc
 
 if USE_WIN32_UUID_API
 lib_src +=\

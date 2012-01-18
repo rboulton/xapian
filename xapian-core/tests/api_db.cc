@@ -2,7 +2,7 @@
  *
  * Copyright 1999,2000,2001 BrightStation PLC
  * Copyright 2002 Ananova Ltd
- * Copyright 2002,2003,2004,2005,2006,2007,2008,2009,2011 Olly Betts
+ * Copyright 2002,2003,2004,2005,2006,2007,2008,2009,2011,2012 Olly Betts
  * Copyright 2006,2007,2008,2009 Lemur Consulting Ltd
  *
  * This program is free software; you can redistribute it and/or
@@ -31,6 +31,7 @@
 #include <string>
 #include <vector>
 #include "safesysstat.h" // For mkdir().
+#include "safeunistd.h" // For sleep().
 
 #include <xapian.h>
 
@@ -1767,13 +1768,13 @@ class MyWeight : public Xapian::Weight {
     std::string name() const { return "MyWeight"; }
     string serialise() const { return string(); }
     MyWeight * unserialise(const string &) const { return new MyWeight; }
-    Xapian::weight get_sumpart(Xapian::termcount, Xapian::termcount) const {
+    double get_sumpart(Xapian::termcount, Xapian::termcount) const {
 	return scale_factor;
     }
-    Xapian::weight get_maxpart() const { return scale_factor; }
+    double get_maxpart() const { return scale_factor; }
 
-    Xapian::weight get_sumextra(Xapian::termcount) const { return 0; }
-    Xapian::weight get_maxextra() const { return 0; }
+    double get_sumextra(Xapian::termcount) const { return 0; }
+    double get_maxextra() const { return 0; }
 };
 
 // tests user weighting scheme.

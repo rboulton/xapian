@@ -1,7 +1,7 @@
 /* @file serialise.h
  * @brief functions to convert classes to strings and back
  *
- * Copyright (C) 2006,2007,2008,2009 Olly Betts
+ * Copyright (C) 2006,2007,2008,2009,2012 Olly Betts
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -34,50 +34,6 @@ namespace Xapian {
     class MSet;
     class RSet;
 }
-
-/** Encode a length as a variable-length string.
- *
- *  The encoding specifies its own length.
- *
- *  @param len	The length to encode.
- *
- *  @return	The encoded length.
- */
-template<class T>
-std::string
-encode_length(T len)
-{
-    std::string result;
-    if (len < 255) {
-	result += static_cast<unsigned char>(len);
-    } else {
-	result += '\xff';
-	len -= 255;
-	while (true) {
-	    unsigned char b = static_cast<unsigned char>(len & 0x7f);
-	    len >>= 7;
-	    if (!len) {
-		result += (b | static_cast<unsigned char>(0x80));
-		break;
-	    }
-	    result += b;
-	}
-    }
-    return result;
-}
-
-/** Decode a length encoded by encode_length.
- *
- *  @param p	Pointer to a pointer to the string, which will be advanced past
- *		the encoded length.
- *  @param end	Pointer to the end of the string.
- *  @param check_remaining	Check the result against the amount of data
- *				remaining after the length has been decoded.
- *
- *  @return	The decoded length.
- */
-XAPIAN_VISIBILITY_DEFAULT
-size_t decode_length(const char ** p, const char *end, bool check_remaining);
 
 /** Serialise a Xapian::Error object to a string.
  *
@@ -161,7 +117,6 @@ Xapian::RSet unserialise_rset(const std::string &s);
  *
  *  @return		The serialisation of the Xapian::Document object.
  */
-XAPIAN_VISIBILITY_DEFAULT
 std::string serialise_document(const Xapian::Document &doc);
 
 /** Unserialise a serialised Xapian::Document object.
@@ -170,7 +125,6 @@ std::string serialise_document(const Xapian::Document &doc);
  *
  *  @return		The unserialised Xapian::Document object.
  */
-XAPIAN_VISIBILITY_DEFAULT
 Xapian::Document unserialise_document(const std::string &s);
 
 #endif

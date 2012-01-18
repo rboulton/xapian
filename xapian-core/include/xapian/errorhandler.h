@@ -1,5 +1,5 @@
-/** \file errorhandler.h
- *  \brief Decide if a Xapian::Error exception should be ignored.
+/** @file errorhandler.h
+ * @brief Decide if a Xapian::Error exception should be ignored.
  */
 /* Copyright (C) 2003,2006,2007 Olly Betts
  *
@@ -49,7 +49,7 @@ class XAPIAN_VISIBILITY_DEFAULT ErrorHandler {
 
     /** Perform user-specified error handling.
      *
-     *  This virtual method must be defined by the APU user to specify
+     *  This virtual method must be defined by the API user to specify
      *  how a Xapian::Error is to be handled.
      *
      *  If you want execution to continue (where possible), then return

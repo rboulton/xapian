@@ -1,3 +1,155 @@
+Wed Jan 04 06:03:09 GMT 2012  Olly Betts <olly@survex.com>
+
+	* php/smoketest.php: Add a test that Query ctor taking OP_NEAR with a
+	  window size works.
+
+Fri Dec 30 13:44:17 GMT 2011  Olly Betts <olly@survex.com>
+
+	* perl/perl.i: Refactor to use XapianSWIGQueryItor class instead
+	  of temporary std::vector<Xapian::Query> (but not via a SWIG
+	  typemap currently).
+
+Fri Dec 30 13:17:15 GMT 2011  Olly Betts <olly@survex.com>
+
+	* lua/util.i: Add begin() and end() methods to XapianSWIGQueryItor
+	  instead of using ctors and assignment.
+
+Fri Dec 30 13:16:00 GMT 2011  Olly Betts <olly@survex.com>
+
+	* lua/util.i: Improve error message.
+
+Fri Dec 30 13:13:12 GMT 2011  Olly Betts <olly@survex.com>
+
+	* lua/util.i: Eliminate "else" after "return".
+
+Fri Dec 30 13:12:34 GMT 2011  Olly Betts <olly@survex.com>
+
+	* lua/util.i: Remove "return;" at end of function.
+
+Fri Dec 30 13:09:00 GMT 2011  Olly Betts <olly@survex.com>
+
+	* lua/util.i: Fix typo in error message.
+
+Fri Dec 30 13:07:06 GMT 2011  Olly Betts <olly@survex.com>
+
+	* lua/util.i: Reindent and fix other whitespace oddities.
+
+Fri Dec 30 12:23:38 GMT 2011  Olly Betts <olly@survex.com>
+
+	* php/php.i: Add begin() method to XapianSWIGQueryItor instead of
+	  using a ctor and assignment.
+
+Fri Dec 30 03:15:31 GMT 2011  Olly Betts <olly@survex.com>
+
+	* ruby/ruby.i: Add begin() and end() methods to XapianSWIGQueryItor
+	  as that's clearer than overloaded ctors with dummy parameters.
+
+Fri Dec 30 01:59:46 GMT 2011  Olly Betts <olly@survex.com>
+
+	* csharp/Makefile.am,xapian.i: We don't use
+	  XAPIAN_MIXED_SUBQUERIES_BY_ITERATOR_TYPEMAP for C#, but we also don't
+	  use the fake ctors added by %extend if this isn't defined, so also
+	  skip them if SWIGCSHARP is defined.
+
+Fri Dec 30 01:18:03 GMT 2011  Olly Betts <olly@survex.com>
+
+	* xapian.i: While we don't currently use
+	  XAPIAN_MIXED_SUBQUERIES_BY_ITERATOR_TYPEMAP for perl, we also don't
+	  use the fake ctors added by %extend if this isn't defined, so also
+	  skip them if SWIGPERL is defined.
+
+Fri Dec 30 01:13:31 GMT 2011  Olly Betts <olly@survex.com>
+
+	* xapian.i: Remove left-over comment associated with
+	  XAPIAN_MIXED_VECTOR_QUERY_INPUT_TYPEMAP.
+
+Fri Dec 30 01:05:52 GMT 2011  Olly Betts <olly@survex.com>
+
+	* python/python.i: Use a SWIG freearg typemap to release the fast
+	  sequence object when we're done with it, rather than carefully
+	  adjusting its reference count when the iterator objects get copied or
+	  assigned.
+
+Fri Dec 30 00:54:51 GMT 2011  Olly Betts <olly@survex.com>
+
+	* xapian.i: Remove XAPIAN_MIXED_VECTOR_QUERY_INPUT_TYPEMAP, since none
+	  of the currently supported languages now use it, and we should use
+	  the XAPIAN_MIXED_SUBQUERIES_BY_ITERATOR_TYPEMAP approach for all
+	  future languages which have containers which allow mixed content.
+
+Fri Dec 30 00:53:07 GMT 2011  Olly Betts <olly@survex.com>
+
+	* python/python.i,python/util.i: Implement
+	  XAPIAN_MIXED_SUBQUERIES_BY_ITERATOR_TYPEMAP approach for Python.
+
+Fri Dec 30 00:04:27 GMT 2011  Olly Betts <olly@survex.com>
+
+	* python/pythontest2.py: Use list comprehensions rather than append
+	  loops.
+
+Thu Dec 29 23:26:18 GMT 2011  Olly Betts <olly@survex.com>
+
+	* python/testsuite2.py: Rephrase so VERBOSE=1 is there to cut and
+	  paste.
+
+Thu Dec 29 22:52:20 GMT 2011  Olly Betts <olly@survex.com>
+
+	* python/testsuite2.py: Don't run off the traceback looking for a
+	  test function if the exception wasn't from a test function.
+
+Thu Dec 29 11:35:51 GMT 2011  Olly Betts <olly@survex.com>
+
+	* csharp/SmokeTest.cs,java/SmokeTest.java,lua/smoketest.lua,
+	  perl/t/10query.t,perl/t/parser.t,perl/t/search.t,php/smoketest.php,
+	  python/pythontest2.py,python/smoketest2.py,python/testsuite2.py,
+	  ruby/smoketest.rb,tcl8/smoketest.tcl,xapian-headers.i,xapian.i:
+	  Update for Query internals changes.
+
+Thu Dec 29 11:20:48 GMT 2011  Olly Betts <olly@survex.com>
+
+	* configure.ac: Fix test for jni.h to try looking for jni.h relative to
+	  the real location of javac, which should work for more JDKs.
+
+Fri Dec 23 01:25:56 GMT 2011  Olly Betts <olly@survex.com>
+
+	* python/python.i: If configure didn't find a way to do TLS, fall back
+	  to using pthread_getspecific() etc, which should work on Mac OS X.
+
+Thu Dec 22 12:00:57 GMT 2011  Olly Betts <olly@survex.com>
+
+	* perl/t/databasemodified.t,perl/t/index.t,perl/t/writabledatabase.t:
+	  Fix "Use of qw(...) as parentheses is deprecated" warnings in tests
+	  with Perl 5.14.
+
+Wed Dec 21 13:48:27 GMT 2011  Olly Betts <olly@survex.com>
+
+	* php/add-php-type-hints: Don't add a type hint to apply($doc) as that
+	  would break existing subclasses as the signature must match.
+
+Wed Dec 21 10:06:30 GMT 2011  Olly Betts <olly@survex.com>
+
+	* perl/Search/Xapian/Document.pm,perl/Search/Xapian/TermGenerator.pm:
+	  Improve POD docs for Document and TermGenerator methods - "weight"
+	  is misleading, so use "wdfinc" and "wdfdec" like the C++ API docs
+	  do.
+
+Wed Dec 21 10:05:48 GMT 2011  Olly Betts <olly@survex.com>
+
+	* lua/util.i,perl/perl.i: Change Xapian::weight to double.
+
+Wed Dec 21 08:43:37 GMT 2011  Olly Betts <olly@survex.com>
+
+	* php/add-php-type-hints: XapianSorter should be XapianKeyMaker.
+
+Wed Dec 21 08:42:57 GMT 2011  Olly Betts <olly@survex.com>
+
+	* php/Makefile.am: Rebuild wrappers if "add-php-type-hints" changes.
+
+Wed Dec 21 04:12:36 GMT 2011  Olly Betts <olly@survex.com>
+
+	* php/Makefile.am,php/add-php-type-hints: Add PHP type hints to the
+	  class wrappers.  Fixes ticket#577.
+
 Tue Dec 20 11:03:37 GMT 2011  Olly Betts <olly@survex.com>
 
 	* README,configure.ac,python/docs/index.html,python/python.i: Handle
@@ -63,7 +215,7 @@ Thu Dec 15 12:30:15 GMT 2011  Olly Betts <olly@survex.com>
 Thu Dec 15 11:40:39 GMT 2011  Olly Betts <olly@survex.com>
 
 	* lua/docs/index.html,lua/generate-lua-exceptions,lua/smoketest.lua,
-	  lua/util.i: Handle an exception from C++ by raising a xapian.Error 
+	  lua/util.i: Handle an exception from C++ by raising a xapian.Error
 	  object as an error in Lua.  Rename get_description() methods to
 	  __tostring(), so that you can use write tostring(obj) in Lua.  Fix
 	  indentation not to assume tabs are two spaces.

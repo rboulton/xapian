@@ -3,6 +3,7 @@
  */
 /* Copyright 2008 Lemur Consulting Ltd
  * Copyright 2010,2011 Richard Boulton
+ * Copyright 2012 Olly Betts
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License as
@@ -28,6 +29,7 @@
 #include "xapian/error.h"
 #include "xapian/registry.h"
 
+#include "net/length.h"
 #include "net/serialise.h"
 #include "serialise-double.h"
 #include "str.h"
@@ -108,7 +110,7 @@ LatLongDistancePostingSource::~LatLongDistancePostingSource()
 }
 
 void
-LatLongDistancePostingSource::next(weight min_wt)
+LatLongDistancePostingSource::next(double min_wt)
 {
     ValuePostingSource::next(min_wt);
 
@@ -122,7 +124,7 @@ LatLongDistancePostingSource::next(weight min_wt)
 
 void
 LatLongDistancePostingSource::skip_to(docid min_docid,
-				      weight min_wt)
+				      double min_wt)
 {
     ValuePostingSource::skip_to(min_docid, min_wt);
 
@@ -136,7 +138,7 @@ LatLongDistancePostingSource::skip_to(docid min_docid,
 
 bool
 LatLongDistancePostingSource::check(docid min_docid,
-				    weight min_wt)
+				    double min_wt)
 {
     if (!ValuePostingSource::check(min_docid, min_wt)) {
 	// check returned false, so we know the document is not in the source.
@@ -154,7 +156,7 @@ LatLongDistancePostingSource::check(docid min_docid,
     return true;
 }
 
-weight
+double
 LatLongDistancePostingSource::get_weight() const
 {
     return weight_from_distance(dist, k1, k2);

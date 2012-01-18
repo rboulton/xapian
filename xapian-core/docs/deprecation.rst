@@ -431,6 +431,14 @@ Removed Feature name                        Upgrade suggestion and comments
 					    with older Xapian releases.
 ------- ----------------------------------- ----------------------------------------------------------------------------------
 1.3.0   ``Xapian::percent`` typedef         Use ``int`` instead, which should also work with older Xapian releases.
+------- ----------------------------------- ----------------------------------------------------------------------------------
+1.3.0   ``Xapian::weight`` typedef          Use ``double`` instead, which should also work with older Xapian releases.
+------- ----------------------------------- ----------------------------------------------------------------------------------
+1.3.0   ``Xapian::Query::unserialise()``    To be compatible with older and newer Xapian, you can catch both exceptions.
+	throws
+	``Xapian::SerialisationError`` not
+	``Xapian::InvalidArgumentError``
+	for errors in serialised data
 ======= =================================== ==================================================================================
 
 

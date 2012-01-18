@@ -1,6 +1,7 @@
-/* multimatch.h: class for performing a match
- *
- * Copyright 1999,2000,2001 BrightStation PLC
+/** @file multimatch.h
+ * @brief class for performing a match
+ */
+/* Copyright 1999,2000,2001 BrightStation PLC
  * Copyright 2002,2003,2004,2005,2006,2007,2009,2011 Olly Betts
  * Copyright 2009 Lemur Consulting Ltd
  *
@@ -23,11 +24,11 @@
 #ifndef OM_HGUARD_MULTIMATCH_H
 #define OM_HGUARD_MULTIMATCH_H
 
-#include "api/omqueryinternal.h"
 #include "submatch.h"
 
 #include <vector>
 
+#include "xapian/query.h"
 #include "xapian/weight.h"
 
 class MultiMatch
@@ -38,7 +39,7 @@ class MultiMatch
 
 	const Xapian::Database db;
 
-	const Xapian::Query::Internal *query;
+	Xapian::Query query;
 
 	Xapian::doccount collapse_max;
 
@@ -46,7 +47,7 @@ class MultiMatch
 
 	int percent_cutoff;
 
-	Xapian::weight weight_cutoff;
+	double weight_cutoff;
 
 	Xapian::Enquire::docid_order order;
 
@@ -77,7 +78,7 @@ class MultiMatch
 	 *  recalc_maxweight if recalculate_w_max is set, and unsetting it.
 	 *  Must only be called on the top of the postlist tree.
 	 */
-	Xapian::weight getorrecalc_maxweight(PostList *pl);
+	double getorrecalc_maxweight(PostList *pl);
 
 	/// Copying is not permitted.
 	MultiMatch(const MultiMatch &);
@@ -100,13 +101,13 @@ class MultiMatch
 	 *  @param have_mdecider Is there a Xapian::MatchDecider in use?
 	 */
 	MultiMatch(const Xapian::Database &db_,
-		   const Xapian::Query::Internal * query,
+		   const Xapian::Query & query,
 		   Xapian::termcount qlen,
 		   const Xapian::RSet * omrset,
 		   Xapian::doccount collapse_max_,
 		   Xapian::valueno collapse_key_,
 		   int percent_cutoff_,
-		   Xapian::weight weight_cutoff_,
+		   double weight_cutoff_,
 		   Xapian::Enquire::docid_order order_,
 		   Xapian::valueno sort_key_,
 		   Xapian::Enquire::Internal::sort_setting sort_by_,

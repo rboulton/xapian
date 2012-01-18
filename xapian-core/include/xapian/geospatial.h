@@ -450,11 +450,11 @@ class XAPIAN_VISIBILITY_DEFAULT LatLongDistancePostingSource : public ValuePosti
 				 double k2_ = 1.0);
     ~LatLongDistancePostingSource();
 
-    void next(Xapian::weight min_wt);
-    void skip_to(Xapian::docid min_docid, Xapian::weight min_wt);
-    bool check(Xapian::docid min_docid, Xapian::weight min_wt);
+    void next(double min_wt);
+    void skip_to(Xapian::docid min_docid, double min_wt);
+    bool check(Xapian::docid min_docid, double min_wt);
 
-    Xapian::weight get_weight() const;
+    double get_weight() const;
     LatLongDistancePostingSource * clone() const;
     std::string name() const;
     std::string serialise() const;
