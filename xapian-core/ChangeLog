@@ -164,6 +164,22 @@ Sun Jun 06 15:04:42 GMT 2010  Richard Boulton <richard@tartarus.org>
 	  Apply patch geospatial_clean3.patch from ticket #481: adds basic
 	  geospatial search support.
 
+Sun Jan 15 12:41:35 GMT 2012  Olly Betts <olly@survex.com>
+
+	* .gitignore,backends/Makefile.mk,backends/brass/,backends/chert/,
+	  backends/dbcheck.cc,bin/,common/bitstream.h,
+	  include/xapian/database.h: Add a (currently experimental) API for
+	  checking the integrity of databases (partly addresses ticket#238).
+	  This means we can remove XAPIAN_VISIBILITY_DEFAULT from a number of
+	  functions which aren't in the public API (partly addresses
+	  ticket#63).
+
+Fri Jan 13 12:07:39 GMT 2012  Olly Betts <olly@survex.com>
+
+	* tests/stemtest.cc: Include <xapian.h> rather than <xapian/stem.h> -
+	  we're trying to test the public API, so including the public API
+	  header is better.
+`
 Thu Jan 12 13:15:27 GMT 2012  Olly Betts <olly@survex.com>
 
 	* tests/unittest.cc: Add new testcases simple_exceptions_work1 and
