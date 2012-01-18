@@ -1,3 +1,44 @@
+Fri Jan 13 05:48:29 GMT 2012  Olly Betts <olly@survex.com>
+
+	* tests/api_geospatial.cc: Doesn't use <xapian/error.h>.
+
+Fri Jan 13 05:45:59 GMT 2012  Olly Betts <olly@survex.com>
+
+	* include/xapian/geospatial.h: Rearrange order of classes to avoid the
+	  need to forward declare LatLongCoordsIterator.
+
+Fri Jan 13 05:37:18 GMT 2012  Olly Betts <olly@survex.com>
+
+	* tests/api_geospatial.cc: Don't skip latlongpostingsource1 for chert
+	  - contrary to the comment, chert supports this testcase fine.
+
+Fri Jan 13 05:36:55 GMT 2012  Olly Betts <olly@survex.com>
+
+	* tests/api_geospatial.cc: Doesn't use <iomanip>.
+
+Fri Jan 13 05:28:11 GMT 2012  Olly Betts <olly@survex.com>
+
+	* include/xapian/geospatial.h: Fix LatLongCoord::operator<() so that
+	  a<b and b<a can't both be true.
+	* tests/api_geospatial.cc: Extend latlongcoords1 to provide a
+	  regression test for this.
+
+Thu Jan 12 22:31:57 GMT 2012  Olly Betts <olly@survex.com>
+
+	* geospatial/latlong_distance_keymaker.cc: Check if the value string
+	  is empty, rather than decoding to a LatLongCoords and then checking
+	  that.
+
+Thu Jan 12 22:18:05 GMT 2012  Olly Betts <olly@survex.com>
+
+	* geospatial/latlong_distance_keymaker.cc,include/xapian/geospatial.h:
+	  Rename “valno” member to “slot”.
+
+Thu Jan 12 21:27:06 GMT 2012  Olly Betts <olly@survex.com>
+
+	* geospatial/latlong_posting_source.cc,geospatial/latlongcoord.cc:
+	  Fix include paths to serialise.h.
+
 Wed Oct 19 00:38:41 GMT 2011  Richard Boulton <richard@tartarus.org>
 
 	* docs/geospatial.rst: Update documentation to reflect the intended

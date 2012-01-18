@@ -3,6 +3,7 @@
  */
 /* Copyright 2008 Lemur Consulting Ltd
  * Copyright 2011 Richard Boulton
+ * Copyright 2012 Olly Betts
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License as
@@ -32,12 +33,12 @@ using namespace std;
 string
 LatLongDistanceKeyMaker::operator()(const Document &doc) const
 {
-    string val(doc.get_value(valno));
-    LatLongCoords doccoords;
-    doccoords.unserialise(val);
-    if (doccoords.empty()) {
+    string val(doc.get_value(slot));
+    if (val.empty()) {
 	return defkey;
     }
+    LatLongCoords doccoords;
+    doccoords.unserialise(val);
     double distance = (*metric)(centre, doccoords);
     return sortable_serialise(distance);
 }

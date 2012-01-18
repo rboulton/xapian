@@ -3,6 +3,7 @@
  */
 /* Copyright 2008,2009 Lemur Consulting Ltd
  * Copyright 2010,2011 Richard Boulton
+ * Copyright 2012 Olly Betts
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License as
@@ -66,7 +67,7 @@ struct XAPIAN_VISIBILITY_DEFAULT LatLongCoord {
      *
      *  Should be in the range -90 <= latitude <= 90
      *
-     *  Postive latitudes represent the northern hemisphere.
+     *  Positive latitudes represent the northern hemisphere.
      */
     double latitude;
 
@@ -92,9 +93,9 @@ struct XAPIAN_VISIBILITY_DEFAULT LatLongCoord {
      *  normalised to the range 0 <= longitude < 360.
      *
      *  If you want to avoid the checks (for example, you know that your values
-     *  are already in range, you can use the alternate constructor to
-     *  construct an uninitialised coordinate, and then assing the values
-     *  directly.
+     *  are already in range), you can use the alternate constructor to
+     *  construct an uninitialised coordinate, and then set the latitude and
+     *  longitude directly.
      */
     LatLongCoord(double latitude_, double longitude_);
 
@@ -130,6 +131,7 @@ struct XAPIAN_VISIBILITY_DEFAULT LatLongCoord {
     bool operator<(const LatLongCoord & other) const
     {
 	if (latitude < other.latitude) return true;
+	if (latitude > other.latitude) return false;
 	return (longitude < other.longitude);
     }
 
@@ -137,10 +139,49 @@ struct XAPIAN_VISIBILITY_DEFAULT LatLongCoord {
     std::string get_description() const;
 };
 
+/// An iterator across the values in a LatLongCoords object.
+class XAPIAN_VISIBILITY_DEFAULT LatLongCoordsIterator {
+    /// Friend class which needs to be able to construct us.
+    friend class LatLongCoords;
 
-// Forward declaration.
-class LatLongCoordsIterator;
+    /// The current position of the iterator.
+    std::vector<LatLongCoord>::const_iterator iter;
 
+    /// Constructor used by LatLongCoords.
+    LatLongCoordsIterator(std::vector<LatLongCoord>::const_iterator iter_)
+	    : iter(iter_) {}
+
+  public:
+    /// Default constructor.  Produces an uninitialised iterator.
+    LatLongCoordsIterator() {}
+
+    const LatLongCoord & operator *() const {
+	return *iter;
+    }
+
+    LatLongCoordsIterator & operator++() {
+	++iter;
+	return *this;
+    }
+
+    DerefWrapper_<LatLongCoord> operator++(int) {
+	const LatLongCoord & tmp = **this;
+	++iter;
+	return DerefWrapper_<LatLongCoord>(tmp);
+    }
+
+    bool operator==(const LatLongCoordsIterator &other) const
+    {
+	return iter == other.iter;
+    }
+
+    // Allow use as an STL iterator
+    typedef std::input_iterator_tag iterator_category;
+    typedef LatLongCoord value_type;
+    typedef size_t difference_type;
+    typedef LatLongCoord * pointer;
+    typedef LatLongCoord & reference;
+};
 
 /// A sequence of latitude-longitude coordinates.
 class XAPIAN_VISIBILITY_DEFAULT LatLongCoords {
@@ -148,11 +189,15 @@ class XAPIAN_VISIBILITY_DEFAULT LatLongCoords {
     std::vector<LatLongCoord> coords;
 
   public:
-    /// Get an begin iterator for the coordinates.
-    LatLongCoordsIterator begin() const;
+    /// Get a begin iterator for the coordinates.
+    LatLongCoordsIterator begin() const {
+	return LatLongCoordsIterator(coords.begin());
+    }
 
     /// Get an end iterator for the coordinates.
-    LatLongCoordsIterator end() const;
+    LatLongCoordsIterator end() const {
+	return LatLongCoordsIterator(coords.end());
+    }
 
     /// Get the number of coordinates in the container.
     size_t size() const
@@ -181,7 +226,7 @@ class XAPIAN_VISIBILITY_DEFAULT LatLongCoords {
 	coords.push_back(coord);
     }
 
-    /** string a buffer and set this object to its coordinates.
+    /** Unserialise a string and set this object to the coordinates in it.
      *
      *  @param serialised the string to unserialise the coordinates from.
      *
@@ -198,61 +243,6 @@ class XAPIAN_VISIBILITY_DEFAULT LatLongCoords {
     /// Return a string describing this object.
     std::string get_description() const;
 };
-
-
-/// An iterator across the values in a LatLongCoords object.
-class XAPIAN_VISIBILITY_DEFAULT LatLongCoordsIterator {
-    /// Friend class which needs to be able to construct us.
-    friend class LatLongCoords;
-
-    /// The current position of the iterator.
-    std::vector<LatLongCoord>::const_iterator iter;
-
-    /// Constructor used by LatLongCoords.
-    LatLongCoordsIterator(std::vector<LatLongCoord>::const_iterator iter_)
-	    : iter(iter_) {}
-
-  public:
-    /// Default constructor.  Produces an uninitialised iterator.
-    LatLongCoordsIterator() {}
-
-    const LatLongCoord & operator *() const {
-	return *iter;
-    }
-
-    LatLongCoordsIterator & operator++() {
-	++iter;
-	return *this;
-    }
-
-    DerefWrapper_<LatLongCoord> operator++(int) {
-	LatLongCoord tmp = **this;
-	++iter;
-	return DerefWrapper_<LatLongCoord>(tmp);
-    }
-
-    bool operator==(const LatLongCoordsIterator &other) const
-    {
-	return iter == other.iter;
-    }
-
-    // Allow use as an STL iterator
-    typedef std::input_iterator_tag iterator_category;
-    typedef LatLongCoord value_type;
-    typedef size_t difference_type;
-    typedef LatLongCoord * pointer;
-    typedef LatLongCoord & reference;
-};
-
-inline LatLongCoordsIterator LatLongCoords::begin() const
-{
-    return LatLongCoordsIterator(coords.begin());
-}
-
-inline LatLongCoordsIterator LatLongCoords::end() const
-{
-    return LatLongCoordsIterator(coords.end());
-}
 
 /// Inequality test for LatLongCoordsIterator objects.
 inline bool
@@ -275,7 +265,7 @@ class XAPIAN_VISIBILITY_DEFAULT LatLongMetric {
 
     /** Return the distance between two coordinate lists, in metres.
      *
-     *  The distance between the coordinate lists is defined to the be minimum
+     *  The distance between the coordinate lists is defined to be the minimum
      *  pairwise distance between coordinates in the lists.
      *
      *  If either of the lists is empty, an InvalidArgumentError will be raised.
@@ -289,7 +279,7 @@ class XAPIAN_VISIBILITY_DEFAULT LatLongMetric {
      *
      *  One of the coordinate lists is supplied in serialised form.
      *
-     *  The distance between the coordinate lists is defined to the be minimum
+     *  The distance between the coordinate lists is defined to be the minimum
      *  pairwise distance between coordinates in the lists.
      *
      *  If either of the lists is empty, an InvalidArgumentError will be raised.
@@ -306,7 +296,7 @@ class XAPIAN_VISIBILITY_DEFAULT LatLongMetric {
      *
      *  One of the coordinate lists is supplied in serialised form.
      *
-     *  The distance between the coordinate lists is defined to the be minimum
+     *  The distance between the coordinate lists is defined to be the minimum
      *  pairwise distance between coordinates in the lists.
      *
      *  If either of the lists is empty, an InvalidArgumentError will be raised.
@@ -395,7 +385,7 @@ class XAPIAN_VISIBILITY_DEFAULT GreatCircleMetric : public LatLongMetric {
  *  Results are weighted by the distance from a fixed point, or list of points,
  *  calculated according to the metric supplied.  If multiple points are
  *  supplied (either in the constructor, or in the coordinates stored in a
- *  document) , the closest pointwise distance is returned.
+ *  document), the closest pointwise distance is returned.
  *
  *  Documents further away than a specified maximum range (or with no location
  *  stored in the specified slot) will not be returned.
@@ -496,7 +486,7 @@ class XAPIAN_VISIBILITY_DEFAULT LatLongDistancePostingSource : public ValuePosti
 class XAPIAN_VISIBILITY_DEFAULT LatLongDistanceKeyMaker : public KeyMaker {
 
     /// The value slot to read.
-    Xapian::valueno valno;
+    Xapian::valueno slot;
 
     /// The centre point (or points) for distance calculation.
     LatLongCoords centre;
@@ -508,21 +498,21 @@ class XAPIAN_VISIBILITY_DEFAULT LatLongDistanceKeyMaker : public KeyMaker {
     std::string defkey;
 
   public:
-    LatLongDistanceKeyMaker(Xapian::valueno valno_,
+    LatLongDistanceKeyMaker(Xapian::valueno slot_,
 			    const LatLongCoords & centre_,
 			    const LatLongMetric & metric_,
 			    double defdistance = 10E10)
-	    : valno(valno_),
+	    : slot(slot_),
 	      centre(centre_),
 	      metric(metric_.clone()),
 	      defkey(sortable_serialise(defdistance))
     {}
 
-    LatLongDistanceKeyMaker(Xapian::valueno valno_,
+    LatLongDistanceKeyMaker(Xapian::valueno slot_,
 			    const LatLongCoord & centre_,
 			    const LatLongMetric & metric_,
 			    double defdistance = 10E10)
-	    : valno(valno_),
+	    : slot(slot_),
 	      centre(),
 	      metric(metric_.clone()),
 	      defkey(sortable_serialise(defdistance))
