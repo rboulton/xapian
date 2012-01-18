@@ -25,7 +25,6 @@
 
 #include "xapian/geospatial.h"
 
-#include "xapian/document.h"
 #include "xapian/error.h"
 #include "xapian/registry.h"
 
